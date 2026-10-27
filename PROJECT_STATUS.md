@@ -72,15 +72,20 @@
     - Commutador manual (`☀️` / `🌙`) tant a la barra d'eines d'escriptori com a la capçalera mòbil, amb memòria a `localStorage`.
     - Adaptació cromàtica completa de fons, targetes, ombres 3D, botons i elements generats per JS.
 - **Punt exacte on ens hem quedat**:
-  - Sessió tancada amb èxit. L'arxiu HTML s'ha revisat i validat sintàcticament amb Node.js (zero errors).
-  - La documentació del projecte queda registrada a `PROJECT_STATUS.md` per garantir la continuïtat de context en properes sessions.
+  - Repositori Git inicialitzat a la branca `main`, vinculat a GitHub (`https://github.com/elCordones/xifres-i-lletres.git`), sincronitzat i amb tots els fitxers publicats (*commit* inicial `3062644` empès amb èxit).
+  - Clarificat el procediment de desplegament a GitHub Pages: la publicació en línia s'executa a través del servei **Actions** (flux `pages-build-deployment`) i es reflecteix a **Deployments**, a diferència de les *Releases* (que s'utilitzen exclusivament per a versions empaquetades descarregables).
+  - L'aplicació web està llesta per ser servida des de l'arrel via `index.html` a la URL: `https://elcordones.github.io/xifres-i-lletres/`.
 - **Decisions tècniques clau**:
   - Es manté la política de fitxer únic autònom per facilitar la màxima portabilitat en entorns educatius sense connexió garantida o amb restriccions de xarxa escolars.
+  - S'ha generat `index.html` com a rèplica sincronitzada de `xifres_i_lletres_laboratori_tecnopedag_gic.html` per complir automàticament amb l'estàndard de resolució d'arrel de GitHub Pages.
   - L'estil visual preserva el relleu hàptic de rajola 3D (`tile-3d`) adaptat tant a fons clars com a fons foscos.
 
 ---
 
 ## 3. Full de Ruta d'Implementació (Roadmap / Propers Passos)
+- **Tasques immediates per a la següent sessió**:
+  - [ ] **Verificació de GitHub Pages en viu**: Comprovar que la tasca `pages-build-deployment` a GitHub Actions ha finalitzat amb èxit i auditar l'obertura de la URL pública `https://elcordones.github.io/xifres-i-lletres/`.
+  - [ ] **Configuració de metadades del repositori**: Afegir la descripció, etiquetes (*topics*: `educacio`, `catala`, `dua`, `aritmetica`, `xifres-i-lletres`) i l'enllaç de la web al panell *About* de GitHub.
 - **Millores futures i backlog**:
   - [ ] **Ampliador de Corpus**: Permetre importar o exportar llistes de paraules temàtiques en format JSON des de la interfície docent.
   - [ ] **Exportació de Dades a Full de Càlcul**: Botó per descarregar les estadístiques de la sessió en format CSV / full de càlcul per a la memòria d'avaluació.
