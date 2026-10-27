@@ -1,0 +1,2179 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xifres i Lletres · Laboratori Tecnopedagògic</title>
+    <!-- Favicon minimalista SVG (apps-escolars standard) -->
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class'
+        };
+    </script>
+    <script>
+        // Detecció precoç per evitar parpelleig blanc (FOUC) abans de renderitzar el DOM
+        (function() {
+            try {
+                const savedTheme = localStorage.getItem('xl_theme');
+                const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            } catch (e) {}
+        })();
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top left, #f8fafc, #e2e8f0);
+            min-height: 100vh;
+            user-select: none;
+        }
+        html.dark body {
+            background: radial-gradient(circle at top left, #0f172a, #020617);
+        }
+        .font-mono-num {
+            font-family: 'Space Grotesk', monospace;
+        }
+        .tile-3d {
+            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 0 #cbd5e1, 0 6px 10px rgba(15, 23, 42, 0.08);
+        }
+        html.dark .tile-3d {
+            box-shadow: 0 4px 0 #334155, 0 6px 10px rgba(0, 0, 0, 0.4);
+        }
+        .tile-3d:active:not(:disabled) {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #cbd5e1, 0 2px 4px rgba(15, 23, 42, 0.06);
+        }
+        html.dark .tile-3d:active:not(:disabled) {
+            box-shadow: 0 1px 0 #334155, 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        .tile-primary {
+            box-shadow: 0 4px 0 #1e40af, 0 6px 12px rgba(30, 64, 175, 0.2);
+        }
+        .tile-primary:active:not(:disabled) {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #1e40af;
+        }
+        .tile-amber {
+            box-shadow: 0 4px 0 #b45309, 0 6px 12px rgba(180, 83, 9, 0.2);
+        }
+        .tile-amber:active:not(:disabled) {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #b45309;
+        }
+        .tile-emerald {
+            box-shadow: 0 4px 0 #047857, 0 6px 12px rgba(4, 120, 87, 0.2);
+        }
+        .tile-emerald:active:not(:disabled) {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #047857;
+        }
+        @keyframes popIn {
+            0% { transform: scale(0.85); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .animate-pop {
+            animation: popIn 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+        @keyframes pulseUrgent {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.06); }
+        }
+        .urgent-timer {
+            animation: pulseUrgent 0.8s infinite;
+        }
+        /* Accessibilitat WCAG: Focus visible per navegació amb polsadors o teclat */
+        button:focus-visible, a:focus-visible {
+            outline: 2px solid #4f46e5 !important;
+            outline-offset: 2px !important;
+        }
+        /* Scrollbar personalitzada */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 8px; }
+        ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 8px; }
+        html.dark ::-webkit-scrollbar-track { background: #1e293b; }
+        html.dark ::-webkit-scrollbar-thumb { background: #475569; }
+
+        /* Peu de pàgina estàndard apps-escolars */
+        .app-footer {
+            margin-top: auto;
+            padding: 0.6rem 1rem;
+            background-color: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+            text-align: center;
+            font-family: system-ui, -apple-system, sans-serif;
+            font-size: 0.78rem;
+            color: #6c757d;
+        }
+        html.dark .app-footer {
+            background-color: #0b1120;
+            border-top: 1px solid #1e293b;
+            color: #94a3b8;
+        }
+        .app-footer .footer-content {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+        }
+        .app-footer .cc-badge {
+            height: 22px;
+            width: auto;
+            display: block;
+        }
+        .app-footer .footer-legal {
+            line-height: 1.4;
+        }
+        .app-footer a {
+            color: #495057;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        html.dark .app-footer a {
+            color: #cbd5e1;
+        }
+        .app-footer a:hover {
+            text-decoration: underline;
+            color: #0d6efd;
+        }
+        html.dark .app-footer a:hover {
+            color: #60a5fa;
+        }
+    </style>
+</head>
+<body class="text-slate-800 dark:text-slate-100 flex flex-col justify-between p-2 sm:p-4 md:p-6 transition-colors duration-200">
+
+    <header class="max-w-5xl w-full mx-auto bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/80 dark:border-slate-800 rounded-2xl shadow-sm p-3 sm:p-4 mb-4 transition-colors">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+            <!-- Marca i Títol -->
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-indigo-600 to-blue-500 flex items-center justify-center text-white shadow-md font-mono-num font-bold text-xl">
+                        X·L
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h1 class="text-lg sm:text-xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100">Xifres i Lletres</h1>
+                            <span class="hidden sm:inline-block text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 rounded-full border border-indigo-200 dark:border-indigo-800">Edició Català · 100% Local</span>
+                        </div>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Entrenament cognitiu de lèxic i agilitat aritmètica</p>
+                    </div>
+                </div>
+                
+                <!-- Botons ràpids en mòbil -->
+                <div class="flex items-center gap-1.5 lg:hidden">
+                    <button onclick="toggleTheme()" class="theme-btn p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition" title="Canvia de mode clar/fosc">
+                        <span class="theme-icon">🌙</span>
+                    </button>
+                    <button id="btn-sound-mobile" onclick="toggleSound()" class="p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700" title="Activa/Desactiva el so">
+                        <span class="sound-icon">🔊</span>
+                    </button>
+                    <button onclick="toggleModal('modal-guia', true)" class="p-2 rounded-xl border border-indigo-200 dark:border-indigo-800 bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 font-semibold text-xs">
+                        Guia
+                    </button>
+                    <button onclick="openSessionSummaryModal()" class="p-2 rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-semibold text-xs" title="Resum de sessió docent">
+                        📊
+                    </button>
+                </div>
+            </div>
+
+            <!-- Selector de Dificultat Evolutiu (Edats) -->
+            <div class="flex flex-wrap items-center justify-between sm:justify-end gap-2 sm:gap-3">
+                <div class="grid grid-cols-2 sm:flex sm:items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700 w-full sm:w-auto gap-1">
+                    <button onclick="setDifficulty('inicial')" id="diff-inicial" class="diff-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all text-center truncate">
+                        🌱 6-8 anys
+                    </button>
+                    <button onclick="setDifficulty('mitja')" id="diff-mitja" class="diff-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all text-center truncate">
+                        🚀 9-11 anys
+                    </button>
+                    <button onclick="setDifficulty('avancat')" id="diff-avancat" class="diff-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all text-center truncate">
+                        ⚡ 12-15 anys
+                    </button>
+                    <button onclick="setDifficulty('expert')" id="diff-expert" class="diff-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all text-center truncate">
+                        🏆 +16 / Adult
+                    </button>
+                </div>
+
+                <!-- Marcador global i utilitats d'escriptori -->
+                <div class="hidden lg:flex items-center gap-2">
+                    <div class="bg-slate-900 dark:bg-slate-950 text-white border border-transparent dark:border-slate-800 px-3.5 py-1.5 rounded-xl flex items-center gap-2 shadow-inner">
+                        <span class="text-[11px] uppercase tracking-wider text-slate-400 font-semibold">Punts</span>
+                        <span id="score-display" class="font-mono-num font-bold text-lg text-amber-400">0</span>
+                    </div>
+                    <button onclick="toggleTheme()" class="theme-btn p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition" title="Canvia de mode clar/fosc">
+                        <span class="theme-icon">🌙</span>
+                    </button>
+                    <button onclick="toggleSound()" class="p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition" title="So sintètic WebAudio">
+                        <span class="sound-icon">🔊</span>
+                    </button>
+                    <button onclick="toggleFullscreen()" class="p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition" title="Mode Pantalla Completa per a PDI">
+                        <span>⛶</span>
+                    </button>
+                    <button id="btn-team-mode" onclick="toggleTeamMode()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold text-xs transition flex items-center gap-1" title="Mode Equips (Equip Blau vs Equip Vermell)">
+                        <span>👥</span> Mode Equips
+                    </button>
+                    <button onclick="openSessionSummaryModal()" class="px-2.5 py-1.5 rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 font-semibold text-xs transition flex items-center gap-1" title="Resum i avaluació formativa docent">
+                        <span>📊</span> Resum Sessió
+                    </button>
+                    <button onclick="toggleModal('modal-guia', true)" class="px-3 py-2 rounded-xl border border-indigo-200 dark:border-indigo-800 bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 font-semibold text-xs transition flex items-center gap-1.5">
+                        <span>🎓</span> Guia Pedagògica
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Barra informativa de l'adaptació pedagògica activa -->
+        <div class="mt-2.5 pt-2.5 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-600 dark:text-slate-400">
+            <div class="flex items-center gap-2 min-w-0 flex-1 pr-2">
+                <span class="inline-block w-2 h-2 shrink-0 rounded-full bg-emerald-500"></span>
+                <span id="pedagogical-badge-text" class="font-medium break-words"></span>
+            </div>
+            <div class="flex items-center gap-3 shrink-0 ml-auto">
+                <span class="lg:hidden font-bold text-slate-800 dark:text-slate-200">Punts: <span id="score-display-mobile" class="text-indigo-600 dark:text-indigo-400 font-mono-num">0</span></span>
+                <span>Rondes jugades: <strong id="rounds-played" class="font-mono-num text-slate-800 dark:text-slate-200">0</strong></span>
+            </div>
+        </div>
+
+        <!-- Barra d'equips cooperatius (activa en Mode Equips) -->
+        <div id="team-score-bar" class="hidden mt-2.5 pt-2.5 border-t border-slate-100 dark:border-slate-800 flex-wrap items-center justify-between gap-3 text-xs bg-slate-50 dark:bg-slate-800/60 p-2.5 rounded-xl">
+            <div class="flex items-center gap-4">
+                <span id="current-team-turn" class="font-bold text-indigo-700 dark:text-indigo-300">Torn: Equip Blau 🔵</span>
+                <div class="flex items-center gap-2">
+                    <span class="px-2 py-0.5 rounded bg-blue-100 dark:bg-blue-950/70 text-blue-800 dark:text-blue-200 font-semibold">Equip Blau: <strong id="team-1-score" class="font-mono-num">0</strong></span>
+                    <span class="px-2 py-0.5 rounded bg-rose-100 dark:bg-rose-950/70 text-rose-800 dark:text-rose-200 font-semibold">Equip Vermell: <strong id="team-2-score" class="font-mono-num">0</strong></span>
+                </div>
+            </div>
+            <span class="text-[11px] text-slate-500 dark:text-slate-400">Avaluació cooperativa d'aula</span>
+        </div>
+    </header>
+
+    <main class="max-w-5xl w-full mx-auto flex-1 flex flex-col gap-4">
+        
+        <!-- Barra d'estat del joc: Pestanyes de mode + Rellotge -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 items-center">
+            <!-- Selector de Prova -->
+            <div class="lg:col-span-7 bg-white dark:bg-slate-900 p-1.5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex gap-2">
+                <button id="tab-lletres" onclick="switchMode('lletres')" class="flex-1 py-2.5 px-3 sm:px-4 rounded-xl font-bold text-sm sm:text-base transition-all flex items-center justify-center gap-1.5 sm:gap-2 bg-indigo-600 text-white shadow-sm">
+                    <span>🔤</span> <span class="truncate">Prova de les Lletres</span>
+                </button>
+                <button id="tab-xifres" onclick="switchMode('xifres')" class="flex-1 py-2.5 px-3 sm:px-4 rounded-xl font-bold text-sm sm:text-base transition-all flex items-center justify-center gap-1.5 sm:gap-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
+                    <span>🔢</span> <span class="truncate">Prova de les Xifres</span>
+                </button>
+            </div>
+
+            <!-- Cronòmetre i estat de la ronda amb DUA Zen Mode i Pausa Docent -->
+            <div class="lg:col-span-5 bg-white dark:bg-slate-900 px-3.5 sm:px-4 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between gap-2">
+                <div class="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1">
+                    <div id="timer-circle" class="w-9 h-9 shrink-0 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center justify-center font-mono-num font-bold text-lg">
+                        ⏱️
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 truncate" id="timer-status-label">En espera</div>
+                        <div class="text-xs text-slate-500 dark:text-slate-400 truncate" id="timer-sub-label">Configura la teva partida</div>
+                    </div>
+                </div>
+                <div class="shrink-0 flex items-center gap-1.5 sm:gap-2">
+                    <button id="btn-timer-pause" onclick="togglePauseTimer()" class="hidden px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-xs font-bold text-slate-700 dark:text-slate-300 transition" title="Pausa o reprèn el temps per al debat col·lectiu">
+                        ⏸️
+                    </button>
+                    <button id="btn-zen-mode" onclick="toggleZenMode()" class="px-2 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 transition flex items-center gap-1" title="Mode Zen: sense límit de temps (DUA contra l'estrès cognitiu)">
+                        <span>🧘</span> <span id="zen-mode-text" class="hidden sm:inline">Zen</span>
+                    </button>
+                    <div id="timer-digits" class="font-mono-num font-extrabold text-2xl sm:text-3xl text-slate-800 dark:text-slate-100 tracking-tight min-w-[44px] text-right shrink-0">
+                        --s
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Banners d'avís (sense alert() natiu) -->
+        <div id="feedback-banner" class="hidden rounded-2xl p-3.5 border text-sm font-medium flex items-center justify-between transition-all shadow-sm">
+            <div class="flex items-center gap-2.5 min-w-0 flex-1 pr-2">
+                <span id="feedback-icon" class="text-lg shrink-0">💡</span>
+                <span id="feedback-message" class="break-words"></span>
+            </div>
+            <button onclick="hideFeedback()" class="shrink-0 text-xs font-bold uppercase px-2 py-1 rounded hover:bg-black/5 dark:hover:bg-white/10">Tanca</button>
+        </div>
+
+        <section id="section-lletres" class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/90 dark:border-slate-800 shadow-md p-4 sm:p-6 flex-1 flex flex-col justify-between gap-5 transition-colors">
+            
+            <!-- Capçalera interna de Lletres -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100 dark:border-slate-800">
+                <div>
+                    <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                        <span>Confecció Lèxica</span>
+                        <span id="letters-count-badge" class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">9 caselles</span>
+                    </h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Demana vocals o consonants i forma la paraula vàlida més llarga possible en català (sense necessitat d'accents).</p>
+                </div>
+                <div class="flex items-center gap-2 self-start sm:self-center">
+                    <button onclick="giveLetterHint()" id="btn-letter-hint" disabled class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 dark:hover:bg-amber-900/60 disabled:opacity-40 transition flex items-center gap-1">
+                        <span>💡</span> Pista Pedagògica
+                    </button>
+                    <button onclick="resetLettersRound()" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition">
+                        🔄 Nova Ronda
+                    </button>
+                </div>
+            </div>
+
+            <!-- Safata de Lletres Disponibles -->
+            <div class="flex flex-col items-center justify-center gap-3 my-1">
+                <div id="letter-pool-grid" class="flex flex-wrap items-center justify-center gap-2 sm:gap-2.5 min-h-[68px]">
+                    <!-- Generat dinàmicament per JS -->
+                </div>
+
+                <!-- Controls de selecció de lletres (Fase 1) -->
+                <div id="letter-picker-controls" class="flex flex-wrap items-center justify-center gap-2.5 mt-1">
+                    <button onclick="pickLetter('V')" id="btn-pick-vowel" class="tile-3d tile-primary bg-blue-600 hover:bg-blue-500 text-white font-bold px-5 py-2.5 rounded-xl text-sm flex items-center gap-2">
+                        <span>🅰️</span> + Vocal
+                    </button>
+                    <button onclick="pickLetter('C')" id="btn-pick-consonant" class="tile-3d tile-amber bg-amber-600 hover:bg-amber-500 text-white font-bold px-5 py-2.5 rounded-xl text-sm flex items-center gap-2">
+                        <span>🅱️</span> + Consonant
+                    </button>
+                    <button onclick="autoFillLetters()" id="btn-pick-auto" class="tile-3d bg-slate-800 dark:bg-slate-700 hover:bg-slate-700 dark:hover:bg-slate-600 text-white font-semibold px-4 py-2.5 rounded-xl text-sm flex items-center gap-2">
+                        <span>🎲</span> Omple Equilibrat
+                    </button>
+                </div>
+            </div>
+
+            <!-- Zona de Construcció de la Paraula Activa -->
+            <div class="bg-slate-50 dark:bg-slate-800/60 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-700 flex flex-col items-center gap-3">
+                <div class="w-full flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 px-1">
+                    <span class="font-semibold uppercase tracking-wider">Paraula en construcció (clica o escriu amb el teclat)</span>
+                    <span id="current-word-length" class="font-mono-num font-bold text-indigo-600 dark:text-indigo-400">0 lletres</span>
+                </div>
+
+                <!-- Caselles de la paraula que forma el jugador -->
+                <div id="word-builder-slots" class="min-h-[56px] w-full flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 py-2 px-3 bg-white dark:bg-slate-900 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-700">
+                    <span class="text-xs text-slate-400 dark:text-slate-500 italic">Selecciona primer totes les lletres de la ronda per començar...</span>
+                </div>
+
+                <!-- Botons d'acció de la paraula -->
+                <div class="flex flex-wrap items-center justify-center gap-2 w-full sm:w-auto">
+                    <button onclick="backspaceLetter()" id="btn-word-back" disabled class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-40 transition">
+                        ⌫ Esborra última
+                    </button>
+                    <button onclick="clearCurrentWord()" id="btn-word-clear" disabled class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-40 transition">
+                        🗑️ Neteja tot
+                    </button>
+                    <button onclick="speakCurrentWord()" id="btn-word-speak" disabled class="px-3 py-2 rounded-xl text-xs font-semibold bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-slate-700 disabled:opacity-40 transition flex items-center gap-1.5" title="Escolta la paraula per síntesi de veu (suport DUA)">
+                        <span>🗣️</span> Escolta
+                    </button>
+                    <button onclick="submitCurrentWord()" id="btn-word-submit" disabled class="tile-3d tile-emerald bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-5 py-2 rounded-xl text-xs sm:text-sm disabled:opacity-40 transition">
+                        ✓ Registra Paraula
+                    </button>
+                    <button onclick="finishLettersRound()" id="btn-word-finish" disabled class="px-4 py-2 rounded-xl text-xs font-bold bg-indigo-100 dark:bg-indigo-950/60 text-indigo-800 dark:text-indigo-200 hover:bg-indigo-200 dark:hover:bg-indigo-900/80 border border-indigo-200/50 dark:border-indigo-800 disabled:opacity-40 transition">
+                        🏁 Resol i Compara
+                    </button>
+                </div>
+            </div>
+
+            <!-- Panell inferior: Paraules trobades pel jugador i Solucionari del Diccionari -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Llista del jugador -->
+                <div class="bg-slate-50/70 dark:bg-slate-800/50 rounded-2xl p-3.5 border border-slate-200 dark:border-slate-700 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">Les teves paraules registrades</h3>
+                            <span id="best-user-word-badge" class="text-xs font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-md border border-emerald-200 dark:border-emerald-800">Millor: -</span>
+                        </div>
+                        <div id="user-words-list" class="flex flex-wrap gap-1.5 min-h-[42px] items-start">
+                            <span class="text-xs text-slate-400 dark:text-slate-500">Encara no has validat cap paraula en aquesta ronda.</span>
+                        </div>
+                    </div>
+
+                    <!-- Opció docent per validar vocabulari addicional -->
+                    <div id="custom-word-box" class="hidden mt-3 pt-2.5 border-t border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                        <span id="custom-word-prompt" class="text-xs text-slate-600 dark:text-slate-300"></span>
+                        <button onclick="acceptTeacherWord()" class="shrink-0 px-2.5 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold">
+                            Valida i Afegeix al Diccionari
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Solucionari Óptim del Sistema -->
+                <div class="bg-indigo-50/50 dark:bg-indigo-950/30 rounded-2xl p-3.5 border border-indigo-100 dark:border-indigo-900/60">
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-indigo-900 dark:text-indigo-200">Anàlisi Lèxica del Sistema</h3>
+                        <span id="dict-match-count" class="text-[11px] font-semibold text-indigo-600 dark:text-indigo-400">Es revela en acabar el temps</span>
+                    </div>
+                    <div id="system-words-solution" class="text-xs text-slate-600 dark:text-slate-300 min-h-[42px] flex flex-wrap gap-1.5 items-center">
+                        <span class="text-slate-400 dark:text-slate-500 italic">Quan finalitzi la ronda veuràs les paraules més llargues possibles amb aquestes lletres.</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="section-xifres" class="hidden bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/90 dark:border-slate-800 shadow-md p-4 sm:p-6 flex-1 flex flex-col justify-between gap-5 transition-colors">
+            
+            <!-- Capçalera interna de Xifres -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100 dark:border-slate-800">
+                <div>
+                    <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                        <span>Agilitat Aritmètica</span>
+                        <span id="numbers-range-badge" class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">Objectiu 101-999</span>
+                    </h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Combina els nombres disponibles amb operacions bàsiques (+, −, ×, ÷ exacta) per assolir l'objectiu o aproximar-t'hi al màxim.</p>
+                </div>
+                <div class="flex items-center gap-2 self-start sm:self-center">
+                    <button onclick="giveNumberHint()" id="btn-number-hint" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 dark:hover:bg-amber-900/60 transition flex items-center gap-1">
+                        <span>💡</span> Pista Primer Pas
+                    </button>
+                    <button onclick="startNumbersRound()" class="tile-3d tile-primary bg-indigo-600 hover:bg-indigo-500 text-white px-3.5 py-1.5 rounded-xl text-xs font-bold transition">
+                        🎲 Nou Repte de Xifres
+                    </button>
+                </div>
+            </div>
+
+            <!-- Marcador de Número Objectiu i Millor Aproximació (Resolució de desbordament) -->
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-3">
+                <!-- Número Objectiu -->
+                <div class="md:col-span-7 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white rounded-2xl p-4 flex items-center justify-between shadow-inner border border-white/5 dark:border-indigo-900/50">
+                    <div class="min-w-0 pr-2">
+                        <span class="text-[11px] uppercase tracking-widest text-indigo-300 font-bold block">Número Objectiu</span>
+                        <span class="text-xs text-slate-300">Aconsegueix el valor exacte o el més proper</span>
+                    </div>
+                    <div id="target-number-display" class="shrink-0 font-mono-num text-4xl sm:text-5xl font-extrabold text-amber-400 tracking-wider px-3 py-1 bg-white/5 rounded-xl border border-white/10">
+                        ---
+                    </div>
+                </div>
+
+                <!-- Millor Aproximació de l'Alumne -->
+                <div class="md:col-span-5 bg-emerald-50/90 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded-2xl p-4 flex flex-col justify-between">
+                    <div class="flex items-center justify-between gap-1 flex-wrap">
+                        <span class="text-[11px] uppercase tracking-wider font-bold text-emerald-800 dark:text-emerald-300">Millor aproximació</span>
+                        <span id="distance-badge" class="shrink-0 text-[11px] font-mono-num font-bold px-2 py-0.5 rounded bg-emerald-200/80 dark:bg-emerald-900/60 text-emerald-900 dark:text-emerald-200">Dist: --</span>
+                    </div>
+                    <div id="closest-number-display" class="font-mono-num text-3xl font-extrabold text-emerald-700 dark:text-emerald-300 mt-1">
+                        ---
+                    </div>
+                </div>
+            </div>
+
+            <!-- Zona de Fitxes Numèriques i Operadors -->
+            <div class="bg-slate-50 dark:bg-slate-800/60 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-700 flex flex-col gap-4">
+                
+                <!-- Visor de l'operació actual pas a pas -->
+                <div class="flex flex-wrap items-center justify-between gap-2 bg-white dark:bg-slate-900 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700">
+                    <div class="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 min-w-0 flex-1">
+                        <span class="font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 shrink-0">Operació en curs:</span>
+                        <span id="current-operation-preview" class="font-mono-num text-base sm:text-lg font-bold text-indigo-700 dark:text-indigo-300 truncate">Selecciona un primer nombre...</span>
+                    </div>
+                    <div class="flex items-center gap-1.5 shrink-0">
+                        <button onclick="undoNumberStep()" id="btn-num-undo" disabled class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 disabled:opacity-40 transition">
+                            ↩ Desfés Pas
+                        </button>
+                        <button onclick="resetSameNumbers()" id="btn-num-reset" disabled class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 disabled:opacity-40 transition">
+                            🔄 Reinicia Càlculs
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Safata de Nombres Disponibles (Inicials + Resultats intermedis) -->
+                <div class="flex flex-col items-center gap-2">
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Nombres disponibles (clica per operar)</span>
+                    <div id="numbers-pool-grid" class="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 min-h-[64px]">
+                        <!-- Generat per JS -->
+                    </div>
+                </div>
+
+                <!-- Botonera d'Operadors Aritmètics (amb flex-wrap per evitar sortides de quadrat en mòbil) -->
+                <div class="flex flex-wrap items-center justify-center gap-2 sm:gap-3.5 pt-1">
+                    <button onclick="selectOperator('+')" id="op-add" class="op-btn tile-3d w-12 h-11 sm:w-16 sm:h-14 rounded-2xl bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 font-mono-num text-xl sm:text-2xl font-bold text-slate-800 dark:text-slate-100 hover:border-indigo-500 transition flex items-center justify-center" title="Suma">
+                        +
+                    </button>
+                    <button onclick="selectOperator('-')" id="op-sub" class="op-btn tile-3d w-12 h-11 sm:w-16 sm:h-14 rounded-2xl bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 font-mono-num text-xl sm:text-2xl font-bold text-slate-800 dark:text-slate-100 hover:border-indigo-500 transition flex items-center justify-center" title="Resta (resultat positiu)">
+                        −
+                    </button>
+                    <button onclick="selectOperator('*')" id="op-mul" class="op-btn tile-3d w-12 h-11 sm:w-16 sm:h-14 rounded-2xl bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 font-mono-num text-xl sm:text-2xl font-bold text-slate-800 dark:text-slate-100 hover:border-indigo-500 transition flex items-center justify-center" title="Multiplicació">
+                        ×
+                    </button>
+                    <button onclick="selectOperator('/')" id="op-div" class="op-btn tile-3d w-12 h-11 sm:w-16 sm:h-14 rounded-2xl bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 font-mono-num text-xl sm:text-2xl font-bold text-slate-800 dark:text-slate-100 hover:border-indigo-500 transition flex items-center justify-center" title="Divisió exacta">
+                        ÷
+                    </button>
+                    <button onclick="finishNumbersRound()" id="btn-num-finish" class="px-3.5 sm:px-4 h-11 sm:h-14 rounded-2xl bg-indigo-100 hover:bg-indigo-200 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/80 text-indigo-900 dark:text-indigo-200 font-bold text-xs sm:text-sm transition flex items-center gap-1.5 border border-indigo-200/60 dark:border-indigo-800">
+                        <span>🏁</span> <span class="whitespace-nowrap">Valida i Mostra Solució</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Panell inferior: Historial de passos de l'alumne i Solucionador d'IA Algorítmica -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Quadern d'operacions de l'alumne -->
+                <div class="bg-slate-50/80 dark:bg-slate-800/50 rounded-2xl p-3.5 border border-slate-200 dark:border-slate-700">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-2">El teu quadern d'operacions</h3>
+                    <div id="user-steps-log" class="space-y-1.5 text-xs font-mono-num text-slate-700 dark:text-slate-300 min-h-[60px]">
+                        <span class="font-sans text-slate-400 dark:text-slate-500 italic">Fes clic sobre un nombre, una operació i un segon nombre per registrar el primer pas.</span>
+                    </div>
+                </div>
+
+                <!-- Solució òptima trobada pel motor de cerca -->
+                <div class="bg-indigo-50/50 dark:bg-indigo-950/30 rounded-2xl p-3.5 border border-indigo-100 dark:border-indigo-900/60">
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-indigo-900 dark:text-indigo-200">Demostració Pas a Pas del Sistema</h3>
+                        <span id="solver-status-badge" class="text-[11px] font-semibold text-indigo-600 dark:text-indigo-400">Calculat localment</span>
+                    </div>
+                    <div id="system-numbers-solution" class="space-y-1 text-xs font-mono-num text-indigo-950 dark:text-indigo-200 min-h-[60px]">
+                        <span class="font-sans text-slate-400 dark:text-slate-500 italic">Prem "Valida i Mostra Solució" o espera que acabi el temps per descobrir el camí matemàtic òptim.</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="modal-guia" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-2xl w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 max-h-[90vh] overflow-y-auto animate-pop text-slate-800 dark:text-slate-100">
+            <div class="flex items-start justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Marc Tecnopedagògic</span>
+                    <h3 class="text-xl font-extrabold text-slate-900 dark:text-slate-100">Com funciona el joc i com s'adapta a cada edat?</h3>
+                </div>
+                <button onclick="toggleModal('modal-guia', false)" class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold">✕</button>
+            </div>
+
+            <div class="space-y-4 my-4 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                <div class="p-3.5 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900/60">
+                    <h4 class="font-bold text-indigo-950 dark:text-indigo-200 mb-1">1. Prova de les Lletres (Competència Lèxica i Ortogràfica)</h4>
+                    <p>L'estudiant escull lliurement entre <strong>vocals i consonants</strong> ponderades segons la freqüència real del català (o utilitza el repartiment equilibrat automàtic). El motor normalitza els diacrítics (accents i dièresis) perquè l'alumne es concentri en l'estructura fonològica i morfològica. Si a l'aula sorgeix un mot normatiu que no figura al corpus integrat, el botó de <em>Validació Docent</em> permet incorporar-lo a la memòria local.</p>
+                </div>
+
+                <div class="p-3.5 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/40 border border-emerald-100 dark:border-emerald-900/60">
+                    <h4 class="font-bold text-emerald-950 dark:text-emerald-200 mb-1">2. Prova de les Xifres (Sentit Numèric i Càlcul Mental)</h4>
+                    <p>A partir d'un número objectiu i 6 nombres base, el jugador construeix operacions encadenades. Seguint les regles clàssiques del concurs: només s'admeten <strong>restes positives</strong> i <strong>divisions exactes</strong> (residu zero), i cada fitxa numèrica només es pot emprar un cop, però el resultat passa a estar disponible per a operacions posteriors. El motor intern resol instantàniament l'arbre d'operacions i ofereix <em>pistes del primer pas</em> sense desvelar tot el resultat.</p>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-slate-900 dark:text-slate-100 mb-2">3. Gradació Evolutiva per Nivells (Disseny Universal per a l'Aprenentatge)</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
+                        <div class="p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60">
+                            <strong class="text-slate-900 dark:text-slate-100 block">🌱 Inicial (6-8 anys · Cicle Inicial)</strong>
+                            90 segons, 7 lletres, objectiu numèric reduït (20 a 99) construït perquè sigui resoluble amb sumes, restes o productes molt senzills.
+                        </div>
+                        <div class="p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60">
+                            <strong class="text-slate-900 dark:text-slate-100 block">🚀 Mitjà (9-11 anys · Cicle Mitjà/Superior)</strong>
+                            75 segons, 8 lletres, objectiu de tres xifres accessibles (100 a 350) garantint existència de solució exacta en pocs passos.
+                        </div>
+                        <div class="p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60">
+                            <strong class="text-slate-900 dark:text-slate-100 block">⚡ Avançat (12-15 anys · ESO)</strong>
+                            60 segons, 9 lletres, objectiu clàssic de tres xifres (101 a 999) amb nombres petits i desenes (25, 50, 75, 100).
+                        </div>
+                        <div class="p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60">
+                            <strong class="text-slate-900 dark:text-slate-100 block">🏆 Expert (+16 anys i Reglament TV)</strong>
+                            45 segons estrictes, 10 lletres i repte aritmètic complet d'alta exigència (101 a 999).
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-3.5 rounded-2xl bg-amber-50/70 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/60">
+                    <h4 class="font-bold text-amber-950 dark:text-amber-200 mb-1">4. Mesures DUA, Inclusió i Dinamització d'Aula</h4>
+                    <ul class="list-disc list-inside space-y-1 text-slate-700 dark:text-slate-300">
+                        <li><strong>Mode Zen (Sense límit de temps)</strong>: Elimina l'ansietat de rendiment i afavoreix el processament profund en alumnat amb TDAH, TEA o ritmes d'aprenentatge diversos.</li>
+                        <li><strong>Pausa Docent (⏸️)</strong>: Atura el cronòmetre en qualsevol moment per obrir el debat metodològic davant la PDI.</li>
+                        <li><strong>Síntesi de Veu (🗣️)</strong>: Suport fònic i lectura en català per a Cicle Inicial i dificultats de lectoescriptura.</li>
+                        <li><strong>Diccionari Integrat DIEC2 (📖)</strong>: Consulta contextualitzada de la definició de qualsevol mot revelat per l'IEC.</li>
+                        <li><strong>Mode Equips (👥)</strong>: Dinamització cooperativa de grup-classe (Equip Blau vs Equip Vermell).</li>
+                        <li><strong>Quadern de Sessió (📊)</strong>: Seguiment i avaluació formativa directa per al docent amb opció de copiar i imprimir.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="flex justify-end pt-3 border-t border-slate-100 dark:border-slate-800">
+                <button onclick="toggleModal('modal-guia', false)" class="px-5 py-2 rounded-xl bg-indigo-600 text-white font-bold text-xs sm:text-sm hover:bg-indigo-500">
+                    Entesos, tornem al joc!
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Resum de Sessió per a l'Avaluació Formativa Docent -->
+    <div id="modal-resum" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-xl w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 max-h-[90vh] overflow-y-auto animate-pop text-slate-800 dark:text-slate-100">
+            <div class="flex items-start justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Avaluació Formativa</span>
+                    <h3 class="text-xl font-extrabold text-slate-900 dark:text-slate-100">Quadern de Progrés de la Sessió</h3>
+                </div>
+                <button onclick="toggleModal('modal-resum', false)" class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold">✕</button>
+            </div>
+
+            <div id="session-summary-content" class="my-4 space-y-3 text-xs sm:text-sm text-slate-700 dark:text-slate-300">
+                <!-- Generat dinàmicament per JS -->
+            </div>
+
+            <div class="flex flex-wrap items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
+                <button onclick="copySessionSummary()" class="px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs hover:bg-slate-50 dark:hover:bg-slate-800 transition flex items-center gap-1.5">
+                    📋 Copia Resum per al Docent
+                </button>
+                <button onclick="window.print()" class="px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs hover:bg-slate-50 dark:hover:bg-slate-800 transition flex items-center gap-1.5">
+                    🖨️ Imprimeix
+                </button>
+                <button onclick="toggleModal('modal-resum', false)" class="px-4 py-2 rounded-xl bg-indigo-600 text-white font-bold text-xs hover:bg-indigo-500 transition">
+                    Tanca
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Peu de pàgina estàndard d'aplicacions escolars -->
+    <footer class="app-footer">
+        <div class="footer-content">
+            <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer" title="Llicència Creative Commons BY-SA 4.0">
+                <img src="https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/by-sa.svg" alt="CC BY-SA 4.0" class="cc-badge" width="70" height="24" />
+            </a>
+            <span class="footer-legal">
+                © David Cordones · 2026 | Codi: <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener noreferrer">AGPL v3</a> · Contingut: <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>
+            </span>
+        </div>
+    </footer>
+
+    <script>
+        /* ============================================================================
+         * 1. MOTOR D'ÀUDIO SINTÈTIC I SÍNTESI DE VEU (Web Audio API + Web Speech API)
+         * ============================================================================ */
+        let soundEnabled = true;
+        let audioCtx = null;
+
+        function getAudioContext() {
+            if (!audioCtx) {
+                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                if (AudioContextClass) audioCtx = new AudioContextClass();
+            }
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            return audioCtx;
+        }
+
+        function playTone(freq = 440, duration = 0.08, type = 'sine', gainVal = 0.08) {
+            if (!soundEnabled) return;
+            try {
+                const ctx = getAudioContext();
+                if (!ctx) return;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, ctx.currentTime);
+                gain.gain.setValueAtTime(gainVal, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + duration);
+            } catch (e) {
+                // Ignorem errors si l'usuari encara no ha interactuat amb el DOM
+            }
+        }
+
+        function playChord(freqs, duration = 0.18) {
+            freqs.forEach((f, idx) => {
+                setTimeout(() => playTone(f, duration, 'triangle', 0.07), idx * 55);
+            });
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            document.querySelectorAll('.sound-icon').forEach(el => {
+                el.textContent = soundEnabled ? '🔊' : '🔇';
+            });
+            if (soundEnabled) playTone(587.33, 0.09);
+        }
+
+        // Síntesi de veu catalana per a suport a la lectura i DUA
+        function speakText(text) {
+            if (!soundEnabled || !('speechSynthesis' in window)) return;
+            try {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text.toLowerCase());
+                utterance.lang = 'ca-ES';
+                utterance.rate = 0.88;
+                const voices = window.speechSynthesis.getVoices();
+                const caVoice = voices.find(v => v.lang.startsWith('ca') || v.lang.startsWith('cat'));
+                if (caVoice) utterance.voice = caVoice;
+                window.speechSynthesis.speak(utterance);
+            } catch (e) {}
+        }
+
+        function speakCurrentWord() {
+            if (currentWordIndices.length === 0) return;
+            const word = currentWordIndices.map(idx => lettersPool[idx].char).join('');
+            speakText(word);
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen().catch(() => {});
+                }
+            }
+        }
+
+        /* ============================================================================
+         * 1.1 GESTIÓ DEL TEMA (MODE FOSC / CLAR I PREFERÈNCIA DEL DISPOSITIU)
+         * ============================================================================ */
+        let currentTheme = 'light';
+
+        function initTheme() {
+            try {
+                const saved = localStorage.getItem('xl_theme');
+                if (saved === 'dark' || saved === 'light') {
+                    setTheme(saved, false);
+                } else {
+                    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                    setTheme(prefersDark ? 'dark' : 'light', false);
+                }
+
+                if (window.matchMedia) {
+                    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+                        if (!localStorage.getItem('xl_theme')) {
+                            setTheme(e.matches ? 'dark' : 'light', false);
+                        }
+                    });
+                }
+            } catch (e) {}
+        }
+
+        function setTheme(theme, save = true) {
+            currentTheme = theme;
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+            if (save) {
+                try {
+                    localStorage.setItem('xl_theme', theme);
+                } catch (e) {}
+            }
+            const icon = theme === 'dark' ? '☀️' : '🌙';
+            const label = theme === 'dark' ? 'Canvia a mode clar' : 'Canvia a mode fosc';
+            document.querySelectorAll('.theme-icon').forEach(el => el.textContent = icon);
+            document.querySelectorAll('.theme-btn').forEach(el => el.title = label);
+        }
+
+        function toggleTheme() {
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            playTone(newTheme === 'dark' ? 392 : 659.25, 0.06);
+            setTheme(newTheme, true);
+        }
+
+        // Inicialitza immediatament
+        initTheme();
+
+        /* ============================================================================
+         * 2. CONFIGURACIÓ DELS NIVELLS DE DIFICULTAT PER EDATS
+         * ============================================================================ */
+        const DIFFICULTY_CONFIGS = {
+            inicial: {
+                id: 'inicial',
+                label: 'Inicial (6-8 anys)',
+                pedagogicalNote: 'Cicle Inicial: 90s de temps, 7 lletres, objectius numèrics de 20 a 99 sempre exactes en 1 o 2 operacions.',
+                timeSeconds: 90,
+                letterSlots: 7,
+                minVowels: 3,
+                targetMin: 20,
+                targetMax: 99,
+                smallPool: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                largePool: [10, 20, 25],
+                guaranteedExact: true
+            },
+            mitja: {
+                id: 'mitja',
+                label: 'Mitjà (9-11 anys)',
+                pedagogicalNote: 'Cicle Mitjà/Superior: 75s de temps, 8 lletres, objectius de 100 a 350 accessibles i pistes guiades.',
+                timeSeconds: 75,
+                letterSlots: 8,
+                minVowels: 3,
+                targetMin: 100,
+                targetMax: 350,
+                smallPool: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                largePool: [10, 25, 50],
+                guaranteedExact: true
+            },
+            avancat: {
+                id: 'avancat',
+                label: 'Avançat (12-15 anys)',
+                pedagogicalNote: 'Secundària (ESO): 60s de temps, 9 lletres i número objectiu clàssic de tres xifres (101 a 999).',
+                timeSeconds: 60,
+                letterSlots: 9,
+                minVowels: 3,
+                targetMin: 101,
+                targetMax: 999,
+                smallPool: [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10],
+                largePool: [25, 50, 75, 100],
+                guaranteedExact: false
+            },
+            expert: {
+                id: 'expert',
+                label: 'Expert (+16 / Adult)',
+                pedagogicalNote: 'Reglament Oficial TV: 45s de temps, 10 lletres i repte aritmètic d’alta velocitat (101 a 999).',
+                timeSeconds: 45,
+                letterSlots: 10,
+                minVowels: 3,
+                targetMin: 101,
+                targetMax: 999,
+                smallPool: [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10],
+                largePool: [25, 50, 75, 100],
+                guaranteedExact: false
+            }
+        };
+
+        /* ============================================================================
+         * 3. CORPUS LÈXIC CATALÀ INTEGRAT (Més de 2.500 arrels, plurals i formes d'ús)
+         * ============================================================================ */
+        const RAW_CATALAN_WORDS = `
+            AIGUA AIGUES AIRE AIRES ALBA ALBES ALBRE ALEGRE ALEGRES ALGA ALGES ALUMNE ALUMNES AMIC AMICS AMIGA AMIGUES AMOR AMORS ANELL ANELLS ANIMA ANIMES ANY ANYS ARBRE ARBRES ARCA ARQUES AREA AREES ARENA ARENES ARMA ARMES ART ARTS ASPRE ASPRES ATLES AULA AULES AUCELL AUCELLS AVUI
+            BAIX BAIXA BAIXOS BAIXES BALA BALES BALCO BALCONS BANC BANCS BANDA BANDES BANY BANYS BARCA BARQUES BARRA BARRES BASE BASES BASTO BASTONS BATEC BATECS BOSC BOSCOS BOTA BOTES BRAC BRACS BRASA BRASES BRESCA BRESCUES BRISA BRISES BROSSA BROSSES BRUIXA BRUIXES BUIDA BUIDES BUIT BUITS BULLIR
+            CABRA CABRES CADIRA CADIRES CAIXA CAIXES CALA CALES CALIU CALMA CAMA CAMES CAMI CAMINS CAMP CAMPS CANA CANES CANCO CANCONS CANTA CANTES CANTAR CAPA CAPES CARA CARES CARBO CARBONS CARN CARNS CARRO CARROS CARTA CARTES CASA CASES CASCA CASQUES CASTELL CASTELLS CATALA CATALANA CATALANS CATALANES CAURE CAVA CAVES CEL CELS CERA CERES CERCLE CERCLES CERT CERTA CERTS CERTES CERVELL CERVELLS CIM CIMS CINTA CINTES CIRERA CIRERES CIUTAT CIUTATS CLAR CLARA CLARS CLARES CLAU CLAUS CLIMA CLIMES CLOSCA CLOSQUES COIX COIXA COIXOS COIXES COLA COLES COLL COLLS COLOM COLOMS COLOR COLORS COMA COMES COMTE COMTES CONILL CONILLS CONTE CONTES COPA COPES COR CORS CORDA CORDES CORONA CORONES CORRER COS COSSOS COSINA COSINES COSTA COSTES COSTAR CREU CREUS CREURE CRIDAR CRISTALL CRISTALLS CROSTA CROSTES CUINA CUINES CULLERA CULLERES CURA CURES CURS CURSOS CURT CURTA CURTS CURTES
+            DADA DADES DALT DAMA DAMES DANSA DANSES DATA DATES DAU DAUS DIT DITS DOBLE DOBLES DOLC DOLCA DOLCOS DOLCES DONA DONES DONAR DORMIR DRAC DRACS DRAP DRAPS DRETA DRETES DUBTE DUBTES DUNA DUNES DURAR
+            EDAT EDATS EINA EINES EIX EIXOS ELIT ELITS EMOCIO EMOCIONS EMPENTA ENGINY ENGINYS ENORME ENORMES ENTRADA ENTRADES ENTRAR EPOCA EPOQUES EQUIP EQUIPS ERA ERES HERBA HERBES ERRADA ERRADES ESCALA ESCALES ESCOLA ESCOLES ESCOLTAR ESCRIURE ESCUT ESCUTS ESFERA ESFERES ESFORC ESFORCS ESPAI ESPAIS ESPASA ESPASES ESPERA ESPERIT ESPIGA ESPIGUES ESPINA ESPINES ESPORT ESPORTS ESQUENA ESQUENES ESTACIO ESTACIONS ESTAT ESTATS ESTEL ESTELS ESTIU ESTIUS ESTONA ESTONES ESTRELLA ESTRELLES ESTUDI ESTUDIS ETAPA ETAPES EXAMEN EXAMENS EXEMPLE EXEMPLES EXIT EXITS
+            FABRICA FABRIQUES FACIL FACILS FADA FADES FAIXA FAIXES FALCA FALQUES FALS FALSA FALSOS FALSES FAMILIA FAMILIES FANG FANGS FARINA FARINES FASE FASES FAUNA FAUNES FEBRE FEBRES FEINA FEINES FELIC FELICOS FERRO FERROS FESTA FESTES FIBRA FIBRES FIGA FIGUES FILA FILES FILL FILLS FILLA FILLES FINAL FINALS FINESTRA FINESTRES FINA FINES FIRMA FIRMES FITA FITES FLAMA FLAMES FLOR FLORS FLUIX FLUIXA FLOC FLOCS FONS FORMA FORMES FORN FORNS FORCA FORCES FORT FORTA FORTS FORTES FOSSA FOSSES FRAGIL FRAGILS FRASE FRASES FRED FREDA FREDS FREDES FRENA FRENES FRONTERA FRONTERES FRUITA FRUITES FULL FULLS FULLA FULLES FUM FUMS FUSTA FUSTES FUTUR FUTURS
+            GAIRE GALTES GAMBA GAMBES GANA GANES GANYOTA GANYOTES GAT GATS GATA GATES GEL GELS GELAT GELATS GENER GENI GENIS GENOLL GENOLLS GENT GENTS GERMA GERMANS GERMANA GERMANES GERRO GERROS GIRA GIRAR GLAC GLORIA GOMA GOMES GOTA GOTES GRAN GRANS GRANA GRANES GRANJA GRANJES GRAPA GRAPES GREIX GREIXOS GREU GREUS GRIS GRISA GRISOS GRISES GROC GROGA GROCS GROGUES GROS GROSSA GROSSOS GROSSES GRUP GRUPS GUANT GUANTS GUARDAR GUERRA GUERRES GUIA GUIES GUIX GUIXOS GUST GUSTOS
+            HABIT HABITS HORA HORES HORT HORTS HORTA HORTES HOTEL HOTELS HUMIT HUMIDA HUMITS HUMIDES HUMOR HUMORS HIVERN HIVERNS HISTORIA HISTORIES HOME HOMES
+            IDEA IDEES ILLA ILLES IMATGE IMATGES IMPULS IMPULSOS INDEX INDEXS INDI INDIS INDUSTRIA INDUSTRIES INFANT INFANTS INFERN INFERNS INSECTE INSECTES INSTANT INSTANTS INTENCIO INTENCIONS INTERIOR INTERIORS INVENT INVENTS HISSAR
+            JARDI JARDINS JOC JOCS JOVE JOVES JUGAR JULIOL JUNY JUNT JUNTS JUNTA JUNTES JUST JUSTA JUSTS JUSTES JUSTICIA
+            LLAC LLACS LLAGA LLAGUES LLANA LLANES LLANCAR LLAPIS LLARG LLARGA LLARGS LLARGUES LLAVORS LLET LLETS LLETRA LLETRES LLEI LLEIS LLEUGER LLEUGERA LLIBRE LLIBRES LLIBERTAT LLIBERTATS LLIGAR LLIT LLITS LLOBARRO LLOP LLOPS LLORER LLORERS LLUM LLUMS LLUNA LLUNES LLUNY LLUITA LLUITES LLOC LLOCS LLOGUER LLOGUERS
+            MARE MARES MARCA MARQUES MARBRE MARBRES MARGE MARGES MARTELL MARTELLS MASIA MASIES MASCARA MASCARES MASSA MASSES MATI MATINS MATERIA MATERIES MECANIC MECANICS MEDI MEDIS MEDICINA MEDICINES MILLOR MILLORS MEL MELS MELO MELONS MEMORIA MEMORIES MENJAR MENJARS MENT MENTS MENTIDA MENTIDES MERCAT MERCATS MERIT MERITS MESCLAR MESURA MESURES METALL METALLS METGE METGES METRE METRES MEITAT MEITATS MICA MIQUES MILIO MILIONS MINA MINES MINUT MINUTS MIRA MIRALL MIRALLS MIRAR MISTERI MISTERIS MITJA MITJES MITJANS BOCA BOQUES MODA MODES MODEL MODELS MODERN MODERNA MOLI MOLINS MOMENT MOMENTS MON MONS MUNTANYA MUNTANYES MORAL MORALS MOSCA MOSQUES MOSTRA MOSTRES MOURE MOVIMENT MOVIMENTS MUCOSA MUCOSES MUR MURS MUSICA MUSIQUES MUSEU MUSEUS
+            NAIXER NASSOS NATURA NATURES NAU NAUS NEBOT NEBOTS NEGRE NEGRA NEGRES NERVI NERVIS NET NETA NETS NETES NEU NEUS NIU NIUS NIVELL NIVELLS NOBLE NOBLES NIT NITS NODE NODES NOM NOMS NOMBRE NOMBRES NORD NORMAL NORMALS NOTA NOTES NOTICIA NOTICIES NOU NOVA NOUS NOVES NUVOL NUVOLS NUMERO NUMEROS
+            OBERT OBERTA OBERTS OBERTES OBRA OBRES OBRIR OCEA OCEANS OCELL OCELLS OCTUBRE OFICI OFICIS OLI OLIS OLOR OLORS OLIVA OLIVES OMBRA OMBRES ONA ONES ONADA ONADES ONCLE ONCLES OPERA OPERES OPINIO OPINIONS ORIGEN ORIGENS ORTIGA ORTIGUES OSCA OSQUES OUS OVELLA OVELLES ORELLA ORELLES
+            PAIS PAISOS PAGAR PAGES PAGESA PALA PALES PALAU PALAUS PALLA PALLES PALMA PALMES PAM PAMS PANA PANES PANERA PANERES PANTALLA PANTALLES PAPER PAPERS PARAULA PARAULES PARC PARCS PARET PARETS PARE PARES PARELLA PARELLES PART PARTS PARTIT PARTITS PASSEIG PASSEIGS PASTA PASTES PASTOR PASTORS PATATA PATATES PATI PATIS PAU PEIX PEIXOS PELL PELLS PENA PENES PENJAR PENSAR PERA PERES PERDRE PERLA PERLES PERILL PERILLS PERMIS PERMISOS PERSONA PERSONES PESAR PETIT PETITA PETITS PETITES PEDRA PEDRES PIANO PIANOS PICA PIQUES PILA PILES PILOTA PILOTES PINYA PINYES PINTAR PINTURA PINTURES PISTA PISTES PLACA PLAQUES PLANA PLANES PLANETA PLANETES PLANTA PLANTES PLATA PLATES PLATJA PLATGES PLORAR PLOMA PLOMES PLUJA PLUGES POBLE POBLES POBRE POBRES PODER PODERS POEMA POEMES POETA POETES PUNT PUNTS POLS POMA POMES PONT PONTS POPA POPES PORT PORTS PORTA PORTES PORTAR POSAR POSSIBLE POSSIBLES POSTA POSTES POU POUS PRAT PRATS PREU PREUS PRIMER PRIMERA PRIMERS PRIMERES PRINCEP PRINCEPS PROBLEMA PROBLEMES PROFESSIO PROFESSIONS PROFESSOR PROFESSORS PROPI PROPIA PROVA PROVES PROPER PROPERA PUJAR PUNTUAR PUR PURA
+            QUADRE QUADRES QUART QUARTS QUASI QUATRE QUEIXAL QUEIXALS QUINA QUINES QUILOMETRE QUILOMETRES
+            RABIA RACO RACONS RADIO RADIOS RAIG RAIGS RAIM RAIMS RAMA RAMES RANA RANES RAPID RAPIDA RAPIDS RAPIDES RARO RARA RATA RATES RATOLI RATOLINS RAO RAONS REBOST REBOSTS RECEPTE RECEIPT RECORD RECORDS REDO REDONA REGAL REGALS REINA REINES REGNE REGNES RELLOTGE RELLOTGES REMEI REMEIS REMOR REMORS RENDA RENDES RENOU RENOUS REPOS RESPOSTA RESPOSTES RESTA RESTES RETORN RETORNS REUNIO REUNIONS REVISTA REVISTES RIU RIUS RIURE RODA RODES ROCA ROQUES ROIG ROJA ROJOS ROJES ROMA ROMANS RONDALLA RONDALLES ROSA ROSES ROSTRE ROSTRES RUTA RUTES
+            SABATA SABATES SABER SABONS SAC SACS SALA SALES SALUT SALTAR SANG SAPES SARDINA SARDINES SASTRE SASTRES SECLE SECLES SECRET SECRETS SEDA SEDES SEIENT SEIENTS SEMPRE SENCILL SENCILLA SENYAL SENYALS SENYOR SENYORS SENYORA SENYORES SENTIT SENTITS SENTIR SERP SERPS SERVEI SERVEIS SETMANA SETMANES SEU SEUS SEURE SILENCI SILENCIS EINA EINES SIMBOL SIMBOLS SISTEMA SISTEMES SOCI SOCIS SOL SOLS SOLA SOLES SOLDAT SOLDATS SOMNI SOMNIS SOMRIURE SOMRIURES SONAR SOPA SOPES SOPAR SOPARS AIXO SORT SORTS SORTIDA SORTIDES SORTIR SOSTRE SOSTRES SUCRE SUCRES SUOR SURT
+            TAULA TAULES TACA TAQUES TALL TALLS TALLAR TALO TALONS TAMBOR TAMBORS TANCAR TARD TARDA TARDES TARONJA TARONJES TASCA TASQUES TASSA TASSES TEATRE TEATRES TEIXIT TEIXITS TELA TELES TELEFON TELEFONS TEMA TEMES TEMPS TENDRE TENDRA TENIR TEORIA TEORIES TERRA TERRES TERCER TERCERA TERME TERMES TERRAT TERRATS TRESOR TRESORS TESTIMONI TESTIMONIS TIA TIES TIGRE TIGRES TIMO TINTA TINTES TITOL TITOLS TOCAR TOMBA TOMBES TOMACA TOMACU TONA TONES TORNAR TORRE TORRES TORTA TORTES TOTAL TOTALS TRACTE TRACTES TRAGIC TRAM TRAMS TRAMPA TRAMPES TRANQUIL TRANQUILA TREN TRENS TRIA TRIES TRIAR TRIST TRISTA TRONC TRONCS TROBAR TRUCAR TUB TUBS TANCAT TANCADA
+            ULL ULLS UNGLA UNGLES UNIC UNICA UNICS UNIQUES UNIO UNIONS UNITAT UNITATS USAR UTIL UTILS
+            VACA VAQUES VAIXELL VAIXELLS VALENT VALENTA VALENTS VALENTES VALOR VALORS VALL VALLS VAPOR VAPORS VARA VARES VARIETAT VARIETATS VEI VEINS VEINA VEINES VELA VELES VENA VENES VENDRE VENJAR VENT VENTS VENTRE VENTRES VERD VERDA VERDS VERDES VERITAT VERITATS VERS VERSOS VESTIT VESTITS VETLLA VETLLES VIATGE VIATGES VIDA VIDES VIDRE VIDRES VILA VILES VELL VELLA VELLS VELLES VINCLE VINCLES VIURE VISTA VISTES VOLA VOLAR VOLER VOLTA VOLTES VOLUM VOLUMS VORA VORES VOTAR VUIT
+            XARXA XARXES XERRAR XICOT XICOTS XIFRA XIFRES XINO XINOS XIULAR XOCOLATA XOCOLATES
+            ZONA ZONES ZERO ZEROS
+            ABRIC ABRICS ACADEMIA ACADEMIES ACCEPTAR ACCIDENT ACCIDENTS ACTIVITAT ACTIVITATS ACTUAL ACTUALS ADMIRAR ADRECA ADRECES AFEGIR AGENCIA AGENCIES AGENDA AGENDES AGULLA AGULLES AJUDAR AJUNTAMENT AJUNTAMENTS ALCALDIA ALCALDIES ALEGRIA ALEGRIES ALIMENT ALIMENTS ALFABET ALFABETS ALTURA ALTURES AMBIENT AMBIENTS AMISTAT AMISTATS ANALISI ANUNCI ANUNCIS APARELL APARELLS APLICAR APRENDRE APUNTAR ARREL ARRELS ARRIBAR ARTICLE ARTICLES ARTISTA ARTISTES ASPECTE ASPECTES ATENCIO ATURAR AUGMENT AUGMENTS AUTOBUS AUTOBUSOS AUTOR AUTORS AUTORA AUTORES AVANCAR AVENTURA AVENTURES AVINGUDA AVINGUDES
+            BALANCA BALANCES BANDERES BARALLA BARALLES BARRERA BARRERES BATALLA BATALLES BATERIA BATERIES BELLESA BELLESES BENZINA BIBLIOTECA BIBLIOTEQUES BICICLETA BICICLETES BITLLET BITLLETS BLANCOR BOIRA BOIRES BOMBOLLA BOMBOLLES BONICA BONIQUES BOTIGA BOTIGUES BRUIXOLA BRUIXOLES BUTXACA BUTXAQUES
+            CABELL CABELLS CABINA CABINES CADENA CADENES CALENDARI CALENDARIS CAMBRA CAMBRES CAMIO CAMIONS CAMPANA CAMPANES CANAL CANALS CANVIAR CAPITOL CAPITOLS CARACTER CARACTERS CARRETERA CARRETERES CARTERA CARTERES CASTANYA CASTANYES CATALEG CATALEGS CATEDRAL CATEDRALS CATEGORIA CATEGORIES CAUSAR CELEBRAR CENTRAL CENTRALS CERAMICA CERCAVILA CERCAVILES CIENTIFIC CIENTIFICS CINEMA CINEMES CIRCULACIO CIRURGIA CIUTADA CIUTADANS CIUTADANA CIUTADANES CLAROR CLASSIC CLASSICA CLASSICS CLAVEGUERA CLIENT CLIENTS COBERTA COBERTES COLECCIO COLECCIONS COLONIA COLONIES COMARCA COMARQUES COMENCAR COMERC COMERCS COMISSIO COMISSIONS COMPANYIA COMPANYIES COMPARTIR COMPLET COMPLETA COMPLETS EXPLICAR COMPRAR COMUNICAR CONCERT CONCERTS CONDICIO CONDICIONS CONFIANCA CONJUNT CONJUNTS CONSELL CONSELLS CONSTRUIR CONTACTE CONTACTES CONTINENT CONTINENTS CONTRARI CONTRARIA CONVERSA CONVERSES CORATGE CORRECTE CORRECTA CORRENT CORRENTS CORTINA CORTINES COSTUM COSTUMS CREACIO CREACIONS CREIXER CRITICA CRITIQUES CULTURA CULTURES CURIOSITAT CURIOSITATS
+            DECISIO DECISIONS DEFENSA DEFENSES DEFINIR DELICAT DELICADA DEMANAR DENTISTA DENTISTES DEPARTAMENT DEPARTAMENTS DEPENDRE DESCOBRIR DESENVOLUPAR DESIG DESITJOS DESPATX DESPATXOS DESTINACIO DETALL DETALLS DIFERENCIA DIFERENCIES DIFICIL DIFICILS DIFICULTAT DIFICULTATS DIUMENGE DIJOUS DIMARTS DIMECRES DIVENDRES DISSABTE DILLUNS DINAMICA DINAMIQUES DINERS DIRECTE DIRECTA DIRECTOR DIRECTORS DIRECTORA DIRECTORES DISCURS DISCURSOS DISTANCIA DISTANCIES DIVIDIR DOCUMENT DOCUMENTS DOLCOR DOMINI DOMINIS DORMIDOR DORMIDORS
+            ECONOMIA ECONOMIES EDIFICI EDIFICIS EDUCACIO EFECTE EFECTES ELECCIO ELECCIONS ELEMENT ELEMENTS ELECTRIC ELECTRICA ELEGANT ELEGANTS EMPRESA EMPRESES ENCARREC ENCARRECS ENDEVINAR ENSENYAR ENTENDRE ENTREVISTA ENTREVISTES ENTUSIASME EQUILIBRI EQUILIBRIS ESCALFAR ESCENARI ESCENARIS ESCRIPTOR ESCRIPTORS ESCRIPTORA ESCRIPTORES ESFORCAR ESPECIAL ESPECIALS ESPERANCA ESPERANCES EXCURSIO EXCURSIONS EXPERIENCIA EXPERIENCIES EXPOSICIO EXPOSICIONS EXPRESSIO EXPRESSIONS EXTERIOR EXTERIORS
+            FACILITAT FACILITATS FANTASIA FANTASIES FARMACIA FARMACIES FAVORIT FAVORITS FENOMEN FENOMENS FERRAMENTA FERRAMENTES FESTIVAL FESTIVALS FIGURA FIGURES FILOSOFIA FINALMENT FISIC FISICA FLEXIBLE FLEXIBLES FORMATGE FORMATGES FORMIGA FORMIGUES FORMULA FORMULES FOTOGRAFIA FOTOGRAFIES FREQUENT FREQUENTS FRIGORIFIC FRIGORIFICS FUNCIO FUNCIONS FUNDACIO FUNDACIONS
+            GALERIA GALERIES GARATGE GARATGES GENERAL GENERALS GENEROS GENEROSA GEOGRAFIA GIMNAS GIMNASOS GOVERNADOR GOVERNADORS GRAMATICA GRATITUD GRAVETAT GUARDIA GUARDIES GUITARRA GUITARRES
+            HABITACIO HABITACIONS HABITUAL HABITUALS HARMONIA HERENCIA HISTORIA HISTORIES HORITZO HORITZONS HOSPITAL HOSPITALS HUMANITAT
+            IDENTITAT IDENTITATS ILUSIO ILUSIONS IMAGINAR IMPORTANT IMPORTANTS IMPRIMIR INDICAR INDIVIDU INDIVIDUS INFANCIA INFORMACIO INFORMACIONS INICIATIVA INICIATIVES INSTITUT INSTITUTS INSTRUMENT INSTRUMENTS INTELIGENT INTELIGENTS INTERES INTERESSOS INTERIORITAT INTERNET INVENTAR INVITACIO INVITACIONS
+            JUSTIFICAR JOVENTUT
+            LABORATORI LABORATORIS LLACUNA LLACUNES LLAMPADA LLAMPADES LLEGENDA LLEGENDES LLEGIR LLENGUA LLENGUES LLENGUATGE LLENGUATGES LLENTIA LLENTIES LLIBRERIA LLIBRERIES LLUMINOS LLUMINOSA
+            MAQUINA MAQUINES MAJORIA MAJORIES MALALTIA MALALTIES MANDARINA MANDARINES MANERA MANERES MANTENIR MARAVELLA MARAVELLES MARGARIDA MARGARIDES MARINER MARINERS MATERIAL MATERIALS MATRICULA MATRICULES MEDICAMENT MEDICAMENTS MELODIA MELODIES KILOGRAM KILOGRAMS MENCIONAR METODE METODES MICROFON MICROFONS MINISTERI MINISTERIS DICCIONARI DICCIONARIS MISTERIOS MISTERIOSA MOBILIARI MONUMENT MONUMENTS MORENETA MOVIMENT MOVIMENTS MULTIPLICAR MUNICIPI MUNICIPIS
+            NACIONAL NACIONALS NAVEGAR NECESSARI NECESSARIA NECESSARIS NECESSARIES NECESSITAT NECESSITATS NEGOCI NEGOCIS NERVIOS NERVIOSA NOTABLE NOTABLES NOVETAT NOVETATS NUTRICIO
+            OBJECTIU OBJECTIUS OBJECTE OBJECTES OBLIGAR OBSERVAR OCASIO OCASIONS OCUPACIO OCUPACIONS OFERIR OFICINA OFICINES OLIMPIADA OLIMPIADES OPERACIO OPERACIONS OPORTUNITAT OPORTUNITATS OPTIMISTA OPTIMISTES ORDINADOR ORDINADORS ORGANITZAR ORIENTAL ORIENTALS ORIGINAL ORIGINALS ORQUESTRA ORQUESTRES
+            PACIENCIA PAISATGE PAISATGES PALMERA PALMERES PAPALLONA PAPALLONES PARAGUAS PARALLEL PARALLELA PARLAMENT PARLAMENTS PARTICIPAR PARTICULAR PARTICULARS PASSATGER PASSATGERS PASSIO PASSIONS PASTISSERIA PASTISSERIES PATRIMONI PATRIMONIS PEDAGOGIA PELICULA PELICULES PENSAMENT PENSAMENTS PERFECCIO PERIODIC PERIODICS PERMANENT PERMANENTS PERMETRE PERSONATGE PERSONATGES PERSPECTIVA PERSPECTIVES PETICIO PETICIONS PINTORESC PINTORESCA PLANIFICAR PLATAFORMA PLATAFORMES POBLACIO POBLACIONS POLITICA POLITIQUES POPULAR POPULARS PORTATIL PORTATILS POSICIO POSICIONS POTENCIA POTENCIES PRACTICA PRACTIQUES PRECISIO PREFERIR PREGUNTA PREGUNTES PREPARAR PRESENCIA PRESIDENT PRESIDENTS PRESSIO PRIMAVERA PRIMAVERES PRINCIPAL PRINCIPALS PRINCIPI PRINCIPIS PROBLEMATICA PROBLEMATIQUES PRODUCCIO PRODUCCIONS PRODUCTE PRODUCTES PROGRAMA PROGRAMES PROGRES PROGRESOS PROMESA PROMESES PROPIETAT PROPIETATS PROPOSAR PROTECCIO PROVINCIA PROVINCIES PUBLICAR QUALITAT QUALITATS QUANTITAT QUANTITATS QUOTIDIA QUOTIDIANA
+        `;
+
+        // Normalització (majúscules sense accents ni dièresis) i indexació per longitud
+        function normalizeCatalan(str) {
+            return str
+                .trim()
+                .toUpperCase()
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .replace(/[^A-ZÇ]/g, "");
+        }
+
+        const DICTIONARY_SET = new Set();
+        RAW_CATALAN_WORDS.split(/\s+/).forEach(w => {
+            const clean = normalizeCatalan(w);
+            if (clean.length >= 2) DICTIONARY_SET.add(clean);
+        });
+
+        // Carrega paraules validades pel docent en sessions prèvies (localStorage)
+        try {
+            const savedCustom = JSON.parse(localStorage.getItem('xifres_lletres_custom_words') || '[]');
+            savedCustom.forEach(w => DICTIONARY_SET.add(normalizeCatalan(w)));
+        } catch (e) {}
+
+        /* ============================================================================
+         * 4. ESTAT GLOBAL DEL JOC, DUA (ZEN MODE), EQUIPS I TEMPORITZADOR
+         * ============================================================================ */
+        let currentDifficulty = DIFFICULTY_CONFIGS.mitja;
+        let currentMode = 'lletres'; // 'lletres' | 'xifres'
+        let globalScore = 0;
+        let roundsPlayed = 0;
+
+        let timerInterval = null;
+        let timeLeft = 0;
+        let roundActive = false;
+        let isZenMode = false;
+        let isTimerPaused = false;
+
+        // Mode Equips per a l'aula
+        let teamModeEnabled = false;
+        let currentTeam = 1; // 1: Blau, 2: Vermell
+        let teamScores = { 1: 0, 2: 0 };
+
+        // Registre formatiu de la sessió
+        let sessionStats = {
+            lettersRounds: 0,
+            numbersRounds: 0,
+            exactNumbers: 0,
+            bestWord: '',
+            bestWordLen: 0,
+            totalWordsFound: 0,
+            history: []
+        };
+        let numberHintStep = 0;
+
+        // Freqüència ponderada del català per a l'extracció de lletres
+        const VOWELS_POOL = "AAAAAAAAAEEEEEEEEEEIIIIIIOOOOOOOUUUU";
+        const CONSONANTS_POOL = "RRRRRRRRSSSSSSSSLLLLLLLLNNNNNNNNTTTTTTTTDDDDDDDDCCCCCCCMPPPPPBBBBVVVGGFFFHHJQWXYZÇ";
+
+        // Estat de la prova de Lletres
+        let lettersPool = []; // [{ id, char, type, used }]
+        let currentWordIndices = []; // índexs de lettersPool
+        let userValidatedWords = []; // paraules ja registrades en la ronda
+        let pendingCustomWord = "";
+        let lettersRoundFinished = false;
+
+        // Estat de la prova de Xifres
+        let targetNumber = 0;
+        let initialNumbers = [];
+        let activeNumberTiles = []; // [{ id, value, used, isIntermediate, expr }]
+        let selectedFirstTileId = null;
+        let selectedOperator = null;
+        let numberHistoryStack = []; // per poder desfer passos
+        let userOperationSteps = [];
+        let bestUserApprox = null;
+        let cachedOptimalSolution = null;
+        let numbersRoundFinished = false;
+
+        /* ============================================================================
+         * 5. FUNCIONS D'INTERFÍCIE, FEEDBACK, DUA I CRONÒMETRE
+         * ============================================================================ */
+        function showFeedback(message, type = 'info') {
+            const banner = document.getElementById('feedback-banner');
+            const icon = document.getElementById('feedback-icon');
+            const msgEl = document.getElementById('feedback-message');
+
+            banner.className = "rounded-2xl p-3.5 border text-xs sm:text-sm font-medium flex items-center justify-between transition-all shadow-sm animate-pop ";
+            if (type === 'success') {
+                banner.classList.add('bg-emerald-50', 'dark:bg-emerald-950/60', 'border-emerald-200', 'dark:border-emerald-800', 'text-emerald-900', 'dark:text-emerald-200');
+                icon.textContent = '🌟';
+            } else if (type === 'warning') {
+                banner.classList.add('bg-amber-50', 'dark:bg-amber-950/60', 'border-amber-200', 'dark:border-amber-800', 'text-amber-900', 'dark:text-amber-200');
+                icon.textContent = '⚠️';
+            } else {
+                banner.classList.add('bg-indigo-50', 'dark:bg-indigo-950/60', 'border-indigo-200', 'dark:border-indigo-800', 'text-indigo-900', 'dark:text-indigo-200');
+                icon.textContent = '💡';
+            }
+            msgEl.textContent = message;
+            banner.classList.remove('hidden');
+        }
+
+        function hideFeedback() {
+            document.getElementById('feedback-banner').classList.add('hidden');
+        }
+
+        function toggleModal(id, show) {
+            const modal = document.getElementById(id);
+            if (show) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            } else {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        }
+
+        function toggleZenMode() {
+            isZenMode = !isZenMode;
+            const btn = document.getElementById('btn-zen-mode');
+            const textEl = document.getElementById('zen-mode-text');
+            if (isZenMode) {
+                btn.className = 'px-2 py-1.5 rounded-xl border border-indigo-300 dark:border-indigo-600 bg-indigo-100 dark:bg-indigo-950/60 text-indigo-900 dark:text-indigo-200 font-bold text-xs transition flex items-center gap-1 shadow-sm shrink-0';
+                textEl.textContent = 'Zen ON';
+                showFeedback("Mode Zen activat: temps il·limitat per reflexionar sense pressió (DUA).", "info");
+            } else {
+                btn.className = 'px-2 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 transition flex items-center gap-1 shrink-0';
+                textEl.textContent = 'Zen';
+                showFeedback("Mode Reglamentari activat amb compte enrere estàndard.", "info");
+            }
+            renderTimerUI();
+        }
+
+        function togglePauseTimer() {
+            if (!roundActive) return;
+            isTimerPaused = !isTimerPaused;
+            const btn = document.getElementById('btn-timer-pause');
+            const statusLabel = document.getElementById('timer-status-label');
+            if (isTimerPaused) {
+                btn.textContent = '▶️';
+                btn.title = 'Reprèn el cronòmetre';
+                statusLabel.textContent = 'Pausa Docent';
+                playTone(330, 0.08);
+            } else {
+                btn.textContent = '⏸️';
+                btn.title = 'Pausa el cronòmetre per al debat docent';
+                statusLabel.textContent = 'Ronda en Joc';
+                playTone(440, 0.08);
+            }
+        }
+
+        function toggleTeamMode() {
+            teamModeEnabled = !teamModeEnabled;
+            const bar = document.getElementById('team-score-bar');
+            const btn = document.getElementById('btn-team-mode');
+            if (teamModeEnabled) {
+                bar.classList.remove('hidden');
+                bar.classList.add('flex');
+                btn.classList.add('bg-blue-100', 'dark:bg-blue-950/60', 'border-blue-300', 'dark:border-blue-700', 'text-blue-900', 'dark:text-blue-200');
+                showFeedback("Mode Equips activat! Torn de l'Equip Blau.", "info");
+                updateTeamScoreUI();
+            } else {
+                bar.classList.add('hidden');
+                bar.classList.remove('flex');
+                btn.classList.remove('bg-blue-100', 'dark:bg-blue-950/60', 'border-blue-300', 'dark:border-blue-700', 'text-blue-900', 'dark:text-blue-200');
+                showFeedback("Mode Individual restablert.", "info");
+            }
+        }
+
+        function updateTeamScoreUI() {
+            document.getElementById('team-1-score').textContent = teamScores[1];
+            document.getElementById('team-2-score').textContent = teamScores[2];
+            const turnEl = document.getElementById('current-team-turn');
+            if (currentTeam === 1) {
+                turnEl.textContent = 'Torn: Equip Blau 🔵';
+                turnEl.className = 'font-bold text-blue-700 dark:text-blue-300';
+            } else {
+                turnEl.textContent = 'Torn: Equip Vermell 🔴';
+                turnEl.className = 'font-bold text-rose-700 dark:text-rose-300';
+            }
+        }
+
+        function openSessionSummaryModal() {
+            const container = document.getElementById('session-summary-content');
+            container.innerHTML = `
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-3 text-center">
+                    <div class="p-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl">
+                        <span class="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 block">Puntuació Global</span>
+                        <strong class="text-xl font-mono-num text-indigo-700 dark:text-indigo-300 font-extrabold">${globalScore}</strong>
+                    </div>
+                    <div class="p-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl">
+                        <span class="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 block">Rondes Jugades</span>
+                        <strong class="text-xl font-mono-num text-slate-800 dark:text-slate-100 font-extrabold">${roundsPlayed}</strong>
+                    </div>
+                    <div class="p-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl">
+                        <span class="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 block">Exactes Xifres</span>
+                        <strong class="text-xl font-mono-num text-emerald-700 dark:text-emerald-300 font-extrabold">${sessionStats.exactNumbers}</strong>
+                    </div>
+                    <div class="p-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl">
+                        <span class="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 block">Paraules Trobades</span>
+                        <strong class="text-xl font-mono-num text-blue-700 dark:text-blue-300 font-extrabold">${sessionStats.totalWordsFound}</strong>
+                    </div>
+                </div>
+
+                ${teamModeEnabled ? `
+                <div class="p-3 bg-blue-50/60 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 rounded-xl mb-3 flex items-center justify-around">
+                    <div>🔵 Equip Blau: <strong class="font-mono-num font-bold text-blue-800 dark:text-blue-200 text-base">${teamScores[1]} punts</strong></div>
+                    <div>🔴 Equip Vermell: <strong class="font-mono-num font-bold text-rose-800 dark:text-rose-200 text-base">${teamScores[2]} punts</strong></div>
+                </div>` : ''}
+
+                <div class="p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
+                    <span class="font-bold text-slate-900 dark:text-slate-100 block mb-1">Fita Lèxica de la Sessió:</span>
+                    <p class="text-slate-600 dark:text-slate-300">
+                        ${sessionStats.bestWord ? `Millor mot registrat: <strong class="text-emerald-700 dark:text-emerald-300 font-bold">${sessionStats.bestWord}</strong> (${sessionStats.bestWordLen} lletres).` : "Encara no s'ha registrat cap mot en aquesta sessió."}
+                    </p>
+                </div>
+
+                <div class="p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
+                    <span class="font-bold text-slate-900 dark:text-slate-100 block mb-1">Nivell d'Aprenentatge Actiu:</span>
+                    <p class="text-slate-600 dark:text-slate-300">${currentDifficulty.label} (${currentDifficulty.pedagogicalNote})</p>
+                </div>
+            `;
+            toggleModal('modal-resum', true);
+        }
+
+        function copySessionSummary() {
+            const report = `XIFRES I LLETRES · INFORME DE SESSIÓ PEDAGÒGICA
+Data: ${new Date().toLocaleDateString('ca-ES')}
+Nivell: ${currentDifficulty.label}
+Rondes totals: ${roundsPlayed}
+Puntuació acumulada: ${globalScore} punts
+Exactes aconseguits a Xifres: ${sessionStats.exactNumbers}
+Paraules registrades a Lletres: ${sessionStats.totalWordsFound}
+Millor mot: ${sessionStats.bestWord || '-'} (${sessionStats.bestWordLen} lletres)
+${teamModeEnabled ? `Marcador Equips: Blau ${teamScores[1]} - Vermell ${teamScores[2]}` : 'Modalitat: Individual / Aula'}`;
+
+            navigator.clipboard.writeText(report).then(() => {
+                showFeedback("Resum de la sessió copiat al porta-retalls amb èxit!", "success");
+            }).catch(() => {
+                showFeedback("No s'ha pogut copiar automàticament.", "warning");
+            });
+        }
+
+        function updateScore(pointsToAdd) {
+            globalScore += pointsToAdd;
+            sessionStats.totalPoints = globalScore;
+            document.getElementById('score-display').textContent = globalScore;
+            document.getElementById('score-display-mobile').textContent = globalScore;
+
+            if (teamModeEnabled && pointsToAdd > 0) {
+                teamScores[currentTeam] += pointsToAdd;
+                currentTeam = currentTeam === 1 ? 2 : 1;
+                updateTeamScoreUI();
+            }
+        }
+
+        function incrementRounds() {
+            roundsPlayed++;
+            document.getElementById('rounds-played').textContent = roundsPlayed;
+        }
+
+        function stopTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+            roundActive = false;
+            isTimerPaused = false;
+            const pauseBtn = document.getElementById('btn-timer-pause');
+            if (pauseBtn) pauseBtn.classList.add('hidden');
+            document.getElementById('timer-circle').classList.remove('urgent-timer', 'bg-rose-100', 'dark:bg-rose-950/60', 'text-rose-700', 'dark:text-rose-300');
+        }
+
+        function startTimer(seconds, onExpireCallback) {
+            stopTimer();
+            isTimerPaused = false;
+            const pauseBtn = document.getElementById('btn-timer-pause');
+            if (pauseBtn) {
+                pauseBtn.classList.remove('hidden');
+                pauseBtn.textContent = '⏸️';
+                pauseBtn.title = 'Pausa el cronòmetre per al debat docent';
+            }
+            timeLeft = seconds;
+            roundActive = true;
+            renderTimerUI();
+
+            document.getElementById('timer-status-label').textContent = 'Ronda en Joc';
+            document.getElementById('timer-sub-label').textContent = isZenMode ? 'Mode Zen (Sense temps)' : currentDifficulty.label;
+
+            timerInterval = setInterval(() => {
+                if (isTimerPaused) return;
+                if (!isZenMode) {
+                    timeLeft--;
+                    renderTimerUI();
+
+                    if (timeLeft <= 10 && timeLeft > 0) {
+                        playTone(660, 0.05, 'sine', 0.05);
+                    }
+
+                    if (timeLeft <= 0) {
+                        stopTimer();
+                        playChord([523.25, 392.00, 329.63], 0.25);
+                        if (onExpireCallback) onExpireCallback();
+                    }
+                }
+            }, 1000);
+        }
+
+        function renderTimerUI() {
+            const digits = document.getElementById('timer-digits');
+            const circle = document.getElementById('timer-circle');
+            if (isZenMode) {
+                digits.textContent = '∞';
+                digits.className = 'font-mono-num font-extrabold text-2xl sm:text-3xl text-indigo-600 dark:text-indigo-400 tracking-tight min-w-[44px] text-right shrink-0';
+                circle.classList.remove('urgent-timer', 'bg-rose-100', 'dark:bg-rose-950/60', 'text-rose-700', 'dark:text-rose-300');
+                return;
+            }
+            digits.textContent = `${timeLeft}s`;
+
+            if (timeLeft <= 10 && roundActive) {
+                digits.className = 'font-mono-num font-extrabold text-2xl sm:text-3xl text-rose-600 dark:text-rose-400 tracking-tight min-w-[44px] text-right shrink-0';
+                circle.classList.add('urgent-timer', 'bg-rose-100', 'dark:bg-rose-950/60', 'text-rose-700', 'dark:text-rose-300');
+            } else {
+                digits.className = 'font-mono-num font-extrabold text-2xl sm:text-3xl text-slate-800 dark:text-slate-100 tracking-tight min-w-[44px] text-right shrink-0';
+                circle.classList.remove('urgent-timer', 'bg-rose-100', 'dark:bg-rose-950/60', 'text-rose-700', 'dark:text-rose-300');
+            }
+        }
+
+        /* ============================================================================
+         * 6. CANVI DE DIFICULTAT I CANVI DE PROVA (LLETRES / XIFRES)
+         * ============================================================================ */
+        function setDifficulty(diffKey) {
+            if (!DIFFICULTY_CONFIGS[diffKey]) return;
+            currentDifficulty = DIFFICULTY_CONFIGS[diffKey];
+            playTone(523.25, 0.07);
+
+            // Estil actiu als botons
+            document.querySelectorAll('.diff-btn').forEach(btn => {
+                btn.className = 'diff-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 text-center truncate';
+            });
+            const activeBtn = document.getElementById(`diff-${diffKey}`);
+            if (activeBtn) {
+                activeBtn.className = 'diff-btn px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all bg-white dark:bg-slate-700 text-indigo-700 dark:text-indigo-300 shadow-sm border border-slate-200/80 dark:border-slate-600 text-center truncate';
+            }
+
+            // Actualitza insígnies descriptives
+            document.getElementById('pedagogical-badge-text').textContent = currentDifficulty.pedagogicalNote;
+            document.getElementById('letters-count-badge').textContent = `${currentDifficulty.letterSlots} lletres · ${currentDifficulty.timeSeconds}s`;
+            document.getElementById('numbers-range-badge').textContent = `Objectiu ${currentDifficulty.targetMin}-${currentDifficulty.targetMax} · ${currentDifficulty.timeSeconds}s`;
+
+            // Reinicia la prova activa amb els nous paràmetres
+            if (currentMode === 'lletres') {
+                resetLettersRound();
+            } else {
+                startNumbersRound();
+            }
+        }
+
+        function switchMode(mode) {
+            if (mode === currentMode) return;
+            currentMode = mode;
+            playTone(493.88, 0.08);
+            hideFeedback();
+
+            const tabLletres = document.getElementById('tab-lletres');
+            const tabXifres = document.getElementById('tab-xifres');
+            const secLletres = document.getElementById('section-lletres');
+            const secXifres = document.getElementById('section-xifres');
+
+            if (mode === 'lletres') {
+                tabLletres.className = 'flex-1 py-2.5 px-3 sm:px-4 rounded-xl font-bold text-sm sm:text-base transition-all flex items-center justify-center gap-1.5 sm:gap-2 bg-indigo-600 text-white shadow-sm';
+                tabXifres.className = 'flex-1 py-2.5 px-3 sm:px-4 rounded-xl font-bold text-sm sm:text-base transition-all flex items-center justify-center gap-1.5 sm:gap-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800';
+                secLletres.classList.remove('hidden');
+                secXifres.classList.add('hidden');
+                resetLettersRound();
+            } else {
+                tabXifres.className = 'flex-1 py-2.5 px-3 sm:px-4 rounded-xl font-bold text-sm sm:text-base transition-all flex items-center justify-center gap-1.5 sm:gap-2 bg-indigo-600 text-white shadow-sm';
+                tabLletres.className = 'flex-1 py-2.5 px-3 sm:px-4 rounded-xl font-bold text-sm sm:text-base transition-all flex items-center justify-center gap-1.5 sm:gap-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800';
+                secXifres.classList.remove('hidden');
+                secLletres.classList.add('hidden');
+                startNumbersRound();
+            }
+        }
+
+        /* ============================================================================
+         * 7. LÒGICA COMPLETA DE LA PROVA DE LES LLETRES
+         * ============================================================================ */
+        function resetLettersRound() {
+            stopTimer();
+            hideFeedback();
+            lettersPool = [];
+            currentWordIndices = [];
+            userValidatedWords = [];
+            pendingCustomWord = "";
+            lettersRoundFinished = false;
+
+            document.getElementById('custom-word-box').classList.add('hidden');
+            if (isZenMode) {
+                renderTimerUI();
+            } else {
+                document.getElementById('timer-digits').textContent = `${currentDifficulty.timeSeconds}s`;
+            }
+            document.getElementById('timer-status-label').textContent = 'Selecció de Lletres';
+            document.getElementById('timer-sub-label').textContent = `Tria ${currentDifficulty.letterSlots} lletres per començar`;
+
+            document.getElementById('letter-picker-controls').classList.remove('hidden');
+            document.getElementById('btn-letter-hint').disabled = true;
+            document.getElementById('btn-word-finish').disabled = true;
+            document.getElementById('best-user-word-badge').textContent = 'Millor: -';
+            document.getElementById('dict-match-count').textContent = 'Es revela en acabar la ronda';
+            document.getElementById('system-words-solution').innerHTML = '<span class="text-slate-400 italic">Quan finalitzi la ronda veuràs les paraules més llargues possibles amb aquestes lletres.</span>';
+
+            renderLetterPool();
+            renderWordBuilder();
+            renderUserWordsList();
+        }
+
+        function pickLetter(type) {
+            const totalSlots = currentDifficulty.letterSlots;
+            if (lettersPool.length >= totalSlots) return;
+
+            const currentVowels = lettersPool.filter(l => l.type === 'V').length;
+            const remainingSlots = totalSlots - lettersPool.length;
+
+            // Salvaguarda pedagògica: garanteix el mínim de vocals perquè sempre es puguin formar paraules
+            let effectiveType = type;
+            if (type === 'C' && (currentVowels + remainingSlots <= currentDifficulty.minVowels)) {
+                effectiveType = 'V';
+                showFeedback(`Per garantir que es puguin formar paraules, les últimes caselles s'assignen a vocals (mínim ${currentDifficulty.minVowels}).`, 'info');
+            }
+
+            const sourceStr = effectiveType === 'V' ? VOWELS_POOL : CONSONANTS_POOL;
+            const randomChar = sourceStr[Math.floor(Math.random() * sourceStr.length)];
+
+            lettersPool.push({
+                id: lettersPool.length,
+                char: randomChar,
+                type: effectiveType,
+                used: false
+            });
+
+            playTone(effectiveType === 'V' ? 523.25 : 440, 0.06);
+            renderLetterPool();
+
+            if (lettersPool.length === totalSlots) {
+                beginLettersPlayPhase();
+            }
+        }
+
+        function autoFillLetters() {
+            const totalSlots = currentDifficulty.letterSlots;
+            while (lettersPool.length < totalSlots) {
+                const currentVowels = lettersPool.filter(l => l.type === 'V').length;
+                const targetVowels = Math.max(currentDifficulty.minVowels, Math.round(totalSlots * 0.42));
+                const nextType = currentVowels < targetVowels ? 'V' : (Math.random() < 0.25 ? 'V' : 'C');
+                pickLetter(nextType);
+            }
+        }
+
+        function beginLettersPlayPhase() {
+            // Verifica que hi hagi com a mínim 2 paraules possibles al diccionari; si no, regenera una vocal/consonant freqüent
+            let matches = findDictionaryMatchesForCurrentPool();
+            let safetyRetries = 0;
+            while (matches.length < 3 && safetyRetries < 8) {
+                lettersPool[lettersPool.length - 1].char = 'A';
+                lettersPool[lettersPool.length - 2].char = 'R';
+                lettersPool[0].char = 'S';
+                matches = findDictionaryMatchesForCurrentPool();
+                safetyRetries++;
+            }
+
+            document.getElementById('letter-picker-controls').classList.add('hidden');
+            document.getElementById('btn-letter-hint').disabled = false;
+            document.getElementById('btn-word-finish').disabled = false;
+
+            playChord([440, 554.37, 659.25], 0.14);
+            renderLetterPool();
+            renderWordBuilder();
+
+            startTimer(currentDifficulty.timeSeconds, () => {
+                finishLettersRound();
+            });
+        }
+
+        function renderLetterPool() {
+            const grid = document.getElementById('letter-pool-grid');
+            grid.innerHTML = '';
+            const totalSlots = currentDifficulty.letterSlots;
+
+            for (let i = 0; i < totalSlots; i++) {
+                const item = lettersPool[i];
+                const btn = document.createElement('button');
+
+                if (item) {
+                    const isReadyToPlay = lettersPool.length === totalSlots && !lettersRoundFinished;
+                    btn.disabled = !isReadyToPlay || item.used;
+                    btn.onclick = () => selectPoolLetter(i);
+
+                    const baseColor = item.type === 'V'
+                        ? 'bg-blue-50 dark:bg-blue-950/60 border-blue-300 dark:border-blue-700 text-blue-900 dark:text-blue-200'
+                        : 'bg-amber-50 dark:bg-amber-950/60 border-amber-300 dark:border-amber-700 text-amber-900 dark:text-amber-200';
+
+                    btn.className = `tile-3d w-12 h-14 sm:w-14 sm:h-16 rounded-2xl border-2 font-mono-num text-xl sm:text-2xl font-extrabold flex flex-col items-center justify-center animate-pop ${baseColor} ${item.used ? 'opacity-30 scale-95' : 'hover:scale-105 cursor-pointer'}`;
+                    btn.innerHTML = `
+                        <span>${item.char}</span>
+                        <span class="text-[9px] font-sans font-semibold uppercase tracking-tighter opacity-60">${item.type === 'V' ? 'Vocal' : 'Cons'}</span>
+                    `;
+                } else {
+                    btn.disabled = true;
+                    btn.className = 'w-12 h-14 sm:w-14 sm:h-16 rounded-2xl border-2 border-dashed border-slate-300 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/40 text-slate-300 dark:text-slate-600 font-mono-num text-lg font-bold flex items-center justify-center';
+                    btn.textContent = '?';
+                }
+                grid.appendChild(btn);
+            }
+        }
+
+        function selectPoolLetter(index) {
+            if (lettersRoundFinished || lettersPool.length < currentDifficulty.letterSlots) return;
+            const item = lettersPool[index];
+            if (!item || item.used) return;
+
+            item.used = true;
+            currentWordIndices.push(index);
+            playTone(587.33 + currentWordIndices.length * 25, 0.05);
+
+            renderLetterPool();
+            renderWordBuilder();
+        }
+
+        function removeBuilderLetterAt(posInWord) {
+            if (lettersRoundFinished) return;
+            const poolIdx = currentWordIndices[posInWord];
+            if (poolIdx !== undefined && lettersPool[poolIdx]) {
+                lettersPool[poolIdx].used = false;
+            }
+            currentWordIndices.splice(posInWord, 1);
+            playTone(392.00, 0.05);
+            renderLetterPool();
+            renderWordBuilder();
+        }
+
+        function backspaceLetter() {
+            if (currentWordIndices.length === 0) return;
+            removeBuilderLetterAt(currentWordIndices.length - 1);
+        }
+
+        function clearCurrentWord() {
+            currentWordIndices.forEach(idx => {
+                if (lettersPool[idx]) lettersPool[idx].used = false;
+            });
+            currentWordIndices = [];
+            playTone(349.23, 0.06);
+            renderLetterPool();
+            renderWordBuilder();
+        }
+
+        function renderWordBuilder() {
+            const container = document.getElementById('word-builder-slots');
+            const lenBadge = document.getElementById('current-word-length');
+            const isPlayable = lettersPool.length === currentDifficulty.letterSlots && !lettersRoundFinished;
+
+            lenBadge.textContent = `${currentWordIndices.length} ${currentWordIndices.length === 1 ? 'lletra' : 'lletres'}`;
+
+            document.getElementById('btn-word-back').disabled = !isPlayable || currentWordIndices.length === 0;
+            document.getElementById('btn-word-clear').disabled = !isPlayable || currentWordIndices.length === 0;
+            document.getElementById('btn-word-submit').disabled = !isPlayable || currentWordIndices.length < 2;
+            const speakBtn = document.getElementById('btn-word-speak');
+            if (speakBtn) speakBtn.disabled = !isPlayable || currentWordIndices.length === 0;
+
+            container.innerHTML = '';
+
+            if (!isPlayable && !lettersRoundFinished) {
+                container.innerHTML = '<span class="text-xs text-slate-400 dark:text-slate-500 italic">Completa primer la selecció de vocals i consonants...</span>';
+                return;
+            }
+
+            if (currentWordIndices.length === 0) {
+                container.innerHTML = '<span class="text-xs text-slate-400 dark:text-slate-500">Fes clic a les lletres de dalt o escriu amb el teclat per formar una paraula...</span>';
+                return;
+            }
+
+            currentWordIndices.forEach((poolIdx, pos) => {
+                const letterObj = lettersPool[poolIdx];
+                const chip = document.createElement('button');
+                chip.onclick = () => removeBuilderLetterAt(pos);
+                chip.className = 'w-10 h-11 sm:w-11 sm:h-12 rounded-xl bg-indigo-600 text-white font-mono-num text-lg sm:text-xl font-bold shadow-sm hover:bg-rose-600 transition flex items-center justify-center animate-pop';
+                chip.title = 'Clica per treure aquesta lletra';
+                chip.textContent = letterObj.char;
+                container.appendChild(chip);
+            });
+        }
+
+        function submitCurrentWord() {
+            if (currentWordIndices.length < 2 || lettersRoundFinished) return;
+            const candidate = currentWordIndices.map(idx => lettersPool[idx].char).join('');
+
+            if (userValidatedWords.includes(candidate)) {
+                showFeedback(`Ja has registrat la paraula "${candidate}" en aquesta ronda.`, 'warning');
+                clearCurrentWord();
+                return;
+            }
+
+            if (DICTIONARY_SET.has(candidate)) {
+                document.getElementById('custom-word-box').classList.add('hidden');
+                pendingCustomWord = "";
+                registerAcceptedWord(candidate);
+                showFeedback(`Molt bé! "${candidate}" (${candidate.length} lletres) és vàlida al diccionari.`, 'success');
+                clearCurrentWord();
+            } else {
+                // Permet validació docent per si és una flexió verbal o mot local vàlid
+                pendingCustomWord = candidate;
+                document.getElementById('custom-word-prompt').textContent = `"${candidate}" no figura al diccionari base. És un mot català correcte?`;
+                document.getElementById('custom-word-box').classList.remove('hidden');
+                playTone(311.13, 0.12, 'sawtooth', 0.06);
+                showFeedback(`La paraula "${candidate}" no és al corpus bàsic. Si és correcta en català, pots validar-la amb el botó inferior.`, 'warning');
+            }
+        }
+
+        function acceptTeacherWord() {
+            if (!pendingCustomWord) return;
+            DICTIONARY_SET.add(pendingCustomWord);
+            try {
+                const saved = JSON.parse(localStorage.getItem('xifres_lletres_custom_words') || '[]');
+                if (!saved.includes(pendingCustomWord)) {
+                    saved.push(pendingCustomWord);
+                    localStorage.setItem('xifres_lletres_custom_words', JSON.stringify(saved));
+                }
+            } catch (e) {}
+
+            registerAcceptedWord(pendingCustomWord);
+            document.getElementById('custom-word-box').classList.add('hidden');
+            showFeedback(`Paraula "${pendingCustomWord}" afegida al diccionari local i validada!`, 'success');
+            pendingCustomWord = "";
+            clearCurrentWord();
+        }
+
+        function registerAcceptedWord(word) {
+            userValidatedWords.push(word);
+            userValidatedWords.sort((a, b) => b.length - a.length);
+            playChord([523.25, 659.25, 783.99], 0.12);
+            renderUserWordsList();
+        }
+
+        function renderUserWordsList() {
+            const listEl = document.getElementById('user-words-list');
+            const bestBadge = document.getElementById('best-user-word-badge');
+
+            if (userValidatedWords.length === 0) {
+                listEl.innerHTML = '<span class="text-xs text-slate-400 dark:text-slate-500">Encara no has validat cap paraula en aquesta ronda.</span>';
+                bestBadge.textContent = 'Millor: -';
+                return;
+            }
+
+            const best = userValidatedWords[0];
+            bestBadge.textContent = `Millor: ${best} (${best.length} lletres)`;
+
+            listEl.innerHTML = '';
+            userValidatedWords.forEach((w, idx) => {
+                const tag = document.createElement('span');
+                tag.className = idx === 0
+                    ? 'px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-600 text-white shadow-sm'
+                    : 'px-2.5 py-1 rounded-lg text-xs font-semibold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200';
+                tag.textContent = `${w} (${w.length})`;
+                listEl.appendChild(tag);
+            });
+        }
+
+        function canFormWordFromPool(word, poolChars) {
+            const counts = {};
+            for (let i = 0; i < poolChars.length; i++) {
+                const c = poolChars[i];
+                counts[c] = (counts[c] || 0) + 1;
+            }
+            for (let i = 0; i < word.length; i++) {
+                const c = word[i];
+                if (!counts[c]) return false;
+                counts[c]--;
+            }
+            return true;
+        }
+
+        function findDictionaryMatchesForCurrentPool() {
+            const poolChars = lettersPool.map(l => l.char);
+            const valid = [];
+            DICTIONARY_SET.forEach(word => {
+                if (word.length <= poolChars.length && canFormWordFromPool(word, poolChars)) {
+                    valid.push(word);
+                }
+            });
+            valid.sort((a, b) => b.length - a.length || a.localeCompare(b));
+            return valid;
+        }
+
+        function giveLetterHint() {
+            if (lettersRoundFinished || lettersPool.length < currentDifficulty.letterSlots) return;
+            const matches = findDictionaryMatchesForCurrentPool();
+            if (matches.length === 0) {
+                showFeedback("No s'han trobat pistes al corpus per a aquesta combinació.", "warning");
+                return;
+            }
+            const topWord = matches[0];
+            showFeedback(`Pista Pedagògica: Pots formar una paraula de ${topWord.length} lletres que comença per "${topWord.slice(0, 2)}...".`, 'info');
+            playTone(659.25, 0.09);
+        }
+
+        function finishLettersRound() {
+            if (lettersRoundFinished) return;
+            stopTimer();
+            lettersRoundFinished = true;
+            incrementRounds();
+
+            // Si hi ha una paraula escrita al visor que és vàlida i l'alumne no havia premut Registra, l'avaluem automàticament
+            if (currentWordIndices.length >= 2) {
+                const candidate = currentWordIndices.map(idx => lettersPool[idx].char).join('');
+                if (DICTIONARY_SET.has(candidate) && !userValidatedWords.includes(candidate)) {
+                    userValidatedWords.push(candidate);
+                    userValidatedWords.sort((a, b) => b.length - a.length);
+                    renderUserWordsList();
+                }
+            }
+
+            document.getElementById('btn-letter-hint').disabled = true;
+            document.getElementById('btn-word-finish').disabled = true;
+            document.getElementById('timer-status-label').textContent = 'Ronda Finalitzada';
+            renderLetterPool();
+            renderWordBuilder();
+
+            const allMatches = findDictionaryMatchesForCurrentPool();
+            const solContainer = document.getElementById('system-words-solution');
+            const countLabel = document.getElementById('dict-match-count');
+
+            countLabel.textContent = `${allMatches.length} paraules possibles trobades`;
+            solContainer.innerHTML = '';
+
+            const bestUserLen = userValidatedWords.length > 0 ? userValidatedWords[0].length : 0;
+            const maxPossibleLen = allMatches.length > 0 ? allMatches[0].length : 0;
+
+            sessionStats.lettersRounds++;
+            let earnedPoints = bestUserLen * 2;
+            if (bestUserLen > 0 && bestUserLen >= maxPossibleLen) {
+                earnedPoints += 5; // Bonificació per assolir la longitud màxima
+            }
+            updateScore(earnedPoints);
+
+            if (bestUserLen > 0) {
+                showFeedback(`Ronda completada! Has sumat +${earnedPoints} punts amb "${userValidatedWords[0]}" (${bestUserLen} lletres).`, 'success');
+            } else {
+                showFeedback(`Ronda finalitzada. Revisa l'anàlisi lèxica del sistema per descobrir noves paraules.`, 'info');
+            }
+
+            // Mostra fins a 20 millors paraules del diccionari amb enllaç didàctic al DIEC2
+            allMatches.slice(0, 20).forEach((w, idx) => {
+                const link = document.createElement('a');
+                link.href = `https://dlc.iec.cat/Results?EntradaText=${encodeURIComponent(w)}`;
+                link.target = '_blank';
+                link.rel = 'noopener noreferrer';
+                link.title = `Clica per consultar la definició de "${w}" al DIEC2 (Institut d'Estudis Catalans)`;
+                const isTop = w.length === maxPossibleLen;
+                link.className = isTop
+                    ? 'px-2.5 py-1 rounded-lg text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm flex items-center gap-1 transition'
+                    : 'px-2 py-0.5 rounded-md text-xs font-medium bg-white dark:bg-slate-800 hover:bg-indigo-50 dark:hover:bg-slate-700 border border-indigo-200 dark:border-indigo-800 text-indigo-900 dark:text-indigo-200 flex items-center gap-1 transition';
+                link.innerHTML = `<span>${w}</span> <span class="text-[10px] opacity-75">(${w.length}) 📖</span>`;
+                solContainer.appendChild(link);
+            });
+        }
+
+        /* ============================================================================
+         * 8. LÒGICA COMPLETA DE LA PROVA DE LES XIFRES + SOLUCIONADOR ALGORÍTMIC
+         * ============================================================================ */
+        function startNumbersRound() {
+            stopTimer();
+            hideFeedback();
+            numbersRoundFinished = false;
+            selectedFirstTileId = null;
+            selectedOperator = null;
+            numberHistoryStack = [];
+            userOperationSteps = [];
+            bestUserApprox = null;
+            numberHintStep = 0;
+
+            // Genera els 6 nombres base segons la dificultat d'edat
+            initialNumbers = generateInitialSixNumbers(currentDifficulty);
+
+            // Genera el número objectiu (construït en nivells Inicial i Mitjà per garantir solució pedagògica)
+            targetNumber = generateTargetForDifficulty(initialNumbers, currentDifficulty);
+
+            activeNumberTiles = initialNumbers.map((val, idx) => ({
+                id: `init-${idx}`,
+                value: val,
+                used: false,
+                isIntermediate: false,
+                expr: String(val)
+            }));
+
+            // Calcula en segon pla la solució òptima exacta o més propera
+            cachedOptimalSolution = solveNumbersPuzzle(initialNumbers, targetNumber);
+
+            // Actualitza UI
+            document.getElementById('target-number-display').textContent = targetNumber;
+            document.getElementById('closest-number-display').textContent = '---';
+            document.getElementById('distance-badge').textContent = 'Dist: --';
+            document.getElementById('current-operation-preview').textContent = 'Selecciona un primer nombre...';
+            document.getElementById('btn-num-finish').disabled = false;
+            document.getElementById('btn-number-hint').disabled = false;
+            document.getElementById('solver-status-badge').textContent = cachedOptimalSolution.distance === 0
+                ? 'Existeix exacte!'
+                : `Millor possible: ${cachedOptimalSolution.bestVal}`;
+            document.getElementById('system-numbers-solution').innerHTML = '<span class="font-sans text-slate-400 italic">Prem "Valida i Mostra Solució" o espera que acabi el temps per descobrir el camí matemàtic òptim.</span>';
+
+            renderNumbersPool();
+            renderOperatorButtons();
+            renderUserStepsLog();
+
+            startTimer(currentDifficulty.timeSeconds, () => {
+                finishNumbersRound();
+            });
+        }
+
+        function generateInitialSixNumbers(diff) {
+            const chosen = [];
+            const largeCopy = [...diff.largePool];
+            const smallCopy = [...diff.smallPool];
+
+            // 1 o 2 nombres grans i la resta petits
+            const numLarge = diff.id === 'inicial' ? 1 : (Math.random() < 0.65 ? 1 : 2);
+            for (let i = 0; i < numLarge && largeCopy.length > 0; i++) {
+                const idx = Math.floor(Math.random() * largeCopy.length);
+                chosen.push(largeCopy.splice(idx, 1)[0]);
+            }
+            while (chosen.length < 6) {
+                const idx = Math.floor(Math.random() * smallCopy.length);
+                chosen.push(smallCopy[idx]);
+            }
+            return chosen.sort((a, b) => a - b);
+        }
+
+        function generateTargetForDifficulty(baseNums, diff) {
+            if (diff.guaranteedExact) {
+                // Simulem operacions vàlides reals per assegurar que l'alumne pot trobar l'exacte sempre
+                for (let attempt = 0; attempt < 80; attempt++) {
+                    let pool = [...baseNums];
+                    const stepsCount = diff.id === 'inicial' ? 2 : (Math.random() < 0.5 ? 2 : 3);
+                    let lastRes = null;
+                    for (let s = 0; s < stepsCount && pool.length >= 2; s++) {
+                        const i1 = Math.floor(Math.random() * pool.length);
+                        const a = pool.splice(i1, 1)[0];
+                        const i2 = Math.floor(Math.random() * pool.length);
+                        const b = pool.splice(i2, 1)[0];
+                        const maxVal = Math.max(a, b);
+                        const minVal = Math.min(a, b);
+                        const ops = ['+', '-', '*'];
+                        if (minVal > 1 && maxVal % minVal === 0) ops.push('/');
+                        const op = ops[Math.floor(Math.random() * ops.length)];
+                        let res = maxVal + minVal;
+                        if (op === '-') res = maxVal - minVal;
+                        else if (op === '*' && maxVal * minVal <= diff.targetMax) res = maxVal * minVal;
+                        else if (op === '/') res = maxVal / minVal;
+                        if (res > 0) {
+                            pool.push(res);
+                            lastRes = res;
+                        }
+                    }
+                    if (lastRes && lastRes >= diff.targetMin && lastRes <= diff.targetMax) {
+                        return lastRes;
+                    }
+                }
+                const sorted = [...baseNums].sort((x, y) => y - x);
+                const comb = (sorted[0] + sorted[1]) * (sorted[2] || 1);
+                if (comb >= diff.targetMin && comb <= diff.targetMax) return comb;
+                const comb2 = sorted[0] * sorted[1] - (sorted[2] || 0);
+                if (comb2 >= diff.targetMin && comb2 <= diff.targetMax) return comb2;
+            }
+            return Math.floor(Math.random() * (diff.targetMax - diff.targetMin + 1)) + diff.targetMin;
+        }
+
+        function renderNumbersPool() {
+            const grid = document.getElementById('numbers-pool-grid');
+            grid.innerHTML = '';
+
+            activeNumberTiles.forEach(tile => {
+                if (tile.used) return;
+                const btn = document.createElement('button');
+                const isSelected = tile.id === selectedFirstTileId;
+                btn.disabled = numbersRoundFinished;
+                btn.onclick = () => handleNumberTileClick(tile.id);
+
+                let styleClasses = 'bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-100 hover:border-indigo-400';
+                if (isSelected) {
+                    styleClasses = 'bg-indigo-600 border-indigo-700 text-white scale-105 ring-4 ring-indigo-200 dark:ring-indigo-900/60';
+                } else if (tile.isIntermediate) {
+                    styleClasses = 'bg-emerald-50 dark:bg-emerald-950/60 border-emerald-400 dark:border-emerald-700 text-emerald-900 dark:text-emerald-200 hover:border-emerald-600';
+                }
+
+                btn.className = `tile-3d min-w-[68px] sm:min-w-[80px] h-14 sm:h-16 px-3 rounded-2xl border-2 font-mono-num text-xl sm:text-2xl font-extrabold flex flex-col items-center justify-center transition animate-pop ${styleClasses}`;
+                btn.innerHTML = `
+                    <span>${tile.value}</span>
+                    ${tile.isIntermediate ? '<span class="text-[9px] font-sans font-bold uppercase tracking-tighter opacity-75">Resultat</span>' : ''}
+                `;
+                grid.appendChild(btn);
+            });
+
+            document.getElementById('btn-num-undo').disabled = numbersRoundFinished || numberHistoryStack.length === 0;
+            document.getElementById('btn-num-reset').disabled = numbersRoundFinished || numberHistoryStack.length === 0;
+        }
+
+        function renderOperatorButtons() {
+            const map = { '+': 'op-add', '-': 'op-sub', '*': 'op-mul', '/': 'op-div' };
+            Object.entries(map).forEach(([opSymbol, elId]) => {
+                const btn = document.getElementById(elId);
+                btn.disabled = numbersRoundFinished;
+                if (selectedOperator === opSymbol) {
+                    btn.className = 'op-btn tile-3d w-12 h-11 sm:w-16 sm:h-14 rounded-2xl bg-amber-500 border-2 border-amber-600 font-mono-num text-xl sm:text-2xl font-bold text-white scale-105 transition flex items-center justify-center';
+                } else {
+                    btn.className = 'op-btn tile-3d w-12 h-11 sm:w-16 sm:h-14 rounded-2xl bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 font-mono-num text-xl sm:text-2xl font-bold text-slate-800 dark:text-slate-100 hover:border-indigo-500 transition flex items-center justify-center';
+                }
+            });
+        }
+
+        function updateOperationPreviewText() {
+            const previewEl = document.getElementById('current-operation-preview');
+            if (!selectedFirstTileId) {
+                previewEl.textContent = 'Selecciona un primer nombre...';
+                return;
+            }
+            const firstTile = activeNumberTiles.find(t => t.id === selectedFirstTileId);
+            if (!firstTile) return;
+
+            const prettyOp = { '+': '+', '-': '−', '*': '×', '/': '÷' }[selectedOperator] || '';
+            if (!selectedOperator) {
+                previewEl.textContent = `${firstTile.value}  [Tria un operador +, −, ×, ÷]`;
+            } else {
+                previewEl.textContent = `${firstTile.value} ${prettyOp} [Tria el segon nombre]`;
+            }
+        }
+
+        function handleNumberTileClick(tileId) {
+            if (numbersRoundFinished) return;
+            const clickedTile = activeNumberTiles.find(t => t.id === tileId && !t.used);
+            if (!clickedTile) return;
+
+            // Si clica sobre el mateix primer nombre seleccionat, el desselecciona
+            if (selectedFirstTileId === tileId) {
+                selectedFirstTileId = null;
+                selectedOperator = null;
+                playTone(392, 0.05);
+                updateOperationPreviewText();
+                renderNumbersPool();
+                renderOperatorButtons();
+                return;
+            }
+
+            // Si encara no hi ha operador seleccionat, aquest passa a ser el primer nombre
+            if (!selectedFirstTileId || !selectedOperator) {
+                selectedFirstTileId = tileId;
+                playTone(523.25, 0.06);
+                updateOperationPreviewText();
+                renderNumbersPool();
+                return;
+            }
+
+            // Ja tenim primer nombre + operador + segon nombre -> executem l'operació!
+            const firstTile = activeNumberTiles.find(t => t.id === selectedFirstTileId && !t.used);
+            if (!firstTile) return;
+
+            executeArithmeticStep(firstTile, selectedOperator, clickedTile);
+        }
+
+        function selectOperator(op) {
+            if (numbersRoundFinished) return;
+            if (!selectedFirstTileId) {
+                showFeedback('Selecciona primer una fitxa numèrica abans de triar l’operació.', 'info');
+                return;
+            }
+            selectedOperator = op;
+            playTone(587.33, 0.06);
+            updateOperationPreviewText();
+            renderOperatorButtons();
+        }
+
+        function executeArithmeticStep(tileA, op, tileB) {
+            let a = tileA.value;
+            let b = tileB.value;
+            let result = null;
+            let stepText = '';
+
+            if (op === '+') {
+                result = a + b;
+                stepText = `${a} + ${b} = ${result}`;
+            } else if (op === '*') {
+                result = a * b;
+                stepText = `${a} × ${b} = ${result}`;
+            } else if (op === '-') {
+                if (a - b <= 0) {
+                    if (a === b) {
+                        showFeedback('La resta de dos nombres iguals dóna 0 i no és útil per continuar operant.', 'warning');
+                    } else {
+                        showFeedback(`Rigor didàctic: En nombres naturals no podem restar ${b} a ${a} (${a} − ${b} donaria un resultat negatiu). Si volies restar el menor al major, selecciona primer el ${b} i després el ${a}.`, 'warning');
+                    }
+                    playTone(280, 0.14, 'sawtooth', 0.06);
+                    return;
+                } else {
+                    result = a - b;
+                    stepText = `${a} − ${b} = ${result}`;
+                }
+            } else if (op === '/') {
+                if (b === 0) {
+                    showFeedback('No es pot dividir per zero.', 'warning');
+                    return;
+                }
+                if (a % b !== 0) {
+                    if (b % a === 0) {
+                        showFeedback(`Rigor didàctic: La divisió ${a} ÷ ${b} no és exacta. Si volies dividir ${b} entre ${a}, selecciona primer el dividend ${b}.`, 'warning');
+                    } else {
+                        showFeedback(`Divisió no exacta (${a} ÷ ${b}). A Xifres i Lletres només s'admeten divisions amb residu zero.`, 'warning');
+                    }
+                    playTone(280, 0.14, 'sawtooth', 0.06);
+                    return;
+                }
+                result = a / b;
+                stepText = `${a} ÷ ${b} = ${result}`;
+            }
+
+            // Desem estat a la pila per permetre Desfer (Undo)
+            numberHistoryStack.push({
+                tilesSnapshot: JSON.parse(JSON.stringify(activeNumberTiles)),
+                stepsSnapshot: [...userOperationSteps],
+                bestApproxSnapshot: bestUserApprox
+            });
+
+            // Marquem els dos operands com a usats i afegim el nou resultat
+            tileA.used = true;
+            tileB.used = true;
+            const newTile = {
+                id: `step-${Date.now()}-${Math.random()}`,
+                value: result,
+                used: false,
+                isIntermediate: true
+            };
+            activeNumberTiles.push(newTile);
+            userOperationSteps.push(stepText);
+
+            selectedFirstTileId = newTile.id; // Seleccionem automàticament el resultat per facilitar operacions encadenades
+            selectedOperator = null;
+
+            // Comprovem si millora l'aproximació a l'objectiu
+            const currentDist = Math.abs(targetNumber - result);
+            const prevBestDist = bestUserApprox === null ? Infinity : Math.abs(targetNumber - bestUserApprox);
+
+            if (currentDist < prevBestDist) {
+                bestUserApprox = result;
+                document.getElementById('closest-number-display').textContent = bestUserApprox;
+                document.getElementById('distance-badge').textContent = currentDist === 0 ? 'EXACTE!' : `Dist: ${currentDist}`;
+            }
+
+            playTone(659.25, 0.08);
+            updateOperationPreviewText();
+            renderNumbersPool();
+            renderOperatorButtons();
+            renderUserStepsLog();
+
+            // Si ha clavat el número exacte, celebrem i tanquem la ronda!
+            if (result === targetNumber) {
+                playChord([523.25, 659.25, 783.99, 1046.50], 0.22);
+                finishNumbersRound(true);
+            }
+        }
+
+        function undoNumberStep() {
+            if (numberHistoryStack.length === 0 || numbersRoundFinished) return;
+            const lastState = numberHistoryStack.pop();
+            activeNumberTiles = lastState.tilesSnapshot;
+            userOperationSteps = lastState.stepsSnapshot;
+            bestUserApprox = lastState.bestApproxSnapshot;
+            selectedFirstTileId = null;
+            selectedOperator = null;
+
+            document.getElementById('closest-number-display').textContent = bestUserApprox === null ? '---' : bestUserApprox;
+            document.getElementById('distance-badge').textContent = bestUserApprox === null
+                ? 'Dist: --'
+                : `Dist: ${Math.abs(targetNumber - bestUserApprox)}`;
+
+            playTone(440, 0.06);
+            updateOperationPreviewText();
+            renderNumbersPool();
+            renderOperatorButtons();
+            renderUserStepsLog();
+        }
+
+        function resetSameNumbers() {
+            if (numberHistoryStack.length === 0 || numbersRoundFinished) return;
+            const firstState = numberHistoryStack[0];
+            activeNumberTiles = firstState.tilesSnapshot;
+            userOperationSteps = [];
+            bestUserApprox = null;
+            numberHistoryStack = [];
+            selectedFirstTileId = null;
+            selectedOperator = null;
+
+            document.getElementById('closest-number-display').textContent = '---';
+            document.getElementById('distance-badge').textContent = 'Dist: --';
+            playTone(392, 0.08);
+            updateOperationPreviewText();
+            renderNumbersPool();
+            renderOperatorButtons();
+            renderUserStepsLog();
+        }
+
+        function renderUserStepsLog() {
+            const logEl = document.getElementById('user-steps-log');
+            if (userOperationSteps.length === 0) {
+                logEl.innerHTML = '<span class="font-sans text-slate-400 dark:text-slate-500 italic">Fes clic sobre un nombre, una operació i un segon nombre per registrar el primer pas.</span>';
+                return;
+            }
+            logEl.innerHTML = userOperationSteps.map((step, i) => `
+                <div class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                    <span><strong class="text-indigo-600 dark:text-indigo-400">Pas ${i + 1}:</strong> ${step}</span>
+                </div>
+            `).join('');
+        }
+
+        /* ============================================================================
+         * 9. MOTOR ALGORÍTMIC DE RESOLUCIÓ DE XIFRES (Cerca Exhaustiva en Arbre)
+         * ============================================================================ */
+        function solveNumbersPuzzle(numbers, target) {
+            let bestDiff = Infinity;
+            let bestVal = numbers[0];
+            let bestSteps = [];
+
+            // Avalua si algun dels nombres inicials ja és el més proper
+            for (const n of numbers) {
+                const d = Math.abs(target - n);
+                if (d < bestDiff) {
+                    bestDiff = d;
+                    bestVal = n;
+                    bestSteps = [];
+                }
+            }
+
+            function dfs(currentPool, stepsSoFar) {
+                // Si ja tenim un exacte amb menys o iguals passos, podem podar branques més llargues
+                if (bestDiff === 0 && stepsSoFar.length >= bestSteps.length) return;
+
+                const len = currentPool.length;
+                if (len < 2) return;
+
+                for (let i = 0; i < len; i++) {
+                    for (let j = i + 1; j < len; j++) {
+                        const a = currentPool[i];
+                        const b = currentPool[j];
+
+                        const remaining = [];
+                        for (let k = 0; k < len; k++) {
+                            if (k !== i && k !== j) remaining.push(currentPool[k]);
+                        }
+
+                        const big = a >= b ? a : b;
+                        const small = a >= b ? b : a;
+
+                        const candidates = [
+                            { val: big + small, desc: `${big} + ${small} = ${big + small}` }
+                        ];
+
+                        if (big - small > 0) {
+                            candidates.push({ val: big - small, desc: `${big} − ${small} = ${big - small}` });
+                        }
+                        if (small > 1) {
+                            candidates.push({ val: big * small, desc: `${big} × ${small} = ${big * small}` });
+                            if (big % small === 0) {
+                                candidates.push({ val: big / small, desc: `${big} ÷ ${small} = ${big / small}` });
+                            }
+                        }
+
+                        for (const cand of candidates) {
+                            const newSteps = [...stepsSoFar, cand.desc];
+                            const diff = Math.abs(target - cand.val);
+
+                            if (diff < bestDiff || (diff === bestDiff && newSteps.length < bestSteps.length)) {
+                                bestDiff = diff;
+                                bestVal = cand.val;
+                                bestSteps = newSteps;
+                            }
+
+                            if (remaining.length > 0 && !(bestDiff === 0 && newSteps.length >= bestSteps.length)) {
+                                remaining.push(cand.val);
+                                dfs(remaining, newSteps);
+                                remaining.pop();
+                            }
+                        }
+                    }
+                }
+            }
+
+            dfs(numbers, []);
+            return {
+                bestVal,
+                distance: bestDiff,
+                steps: bestSteps
+            };
+        }
+
+        function giveNumberHint() {
+            if (!cachedOptimalSolution || cachedOptimalSolution.steps.length === 0) {
+                showFeedback('Ja tens el número objectiu entre les fitxes inicials!', 'info');
+                return;
+            }
+            if (numberHintStep === 0 || cachedOptimalSolution.steps.length === 1) {
+                const firstStep = cachedOptimalSolution.steps[0];
+                showFeedback(`Pista Pedagògica 1 (Primer pas): Prova de començar amb ${firstStep}`, 'info');
+                numberHintStep = 1;
+            } else {
+                const secondStep = cachedOptimalSolution.steps[1] || cachedOptimalSolution.steps[0];
+                showFeedback(`Pista Pedagògica 2 (Segon pas): Després continua amb ${secondStep}`, 'info');
+                numberHintStep = 0;
+            }
+            playTone(659.25, 0.09);
+        }
+
+        function finishNumbersRound(isImmediateExact = false) {
+            if (numbersRoundFinished) return;
+            stopTimer();
+            numbersRoundFinished = true;
+            incrementRounds();
+            sessionStats.numbersRounds++;
+
+            document.getElementById('btn-num-finish').disabled = true;
+            document.getElementById('btn-number-hint').disabled = true;
+            document.getElementById('timer-status-label').textContent = 'Ronda Finalitzada';
+            renderNumbersPool();
+            renderOperatorButtons();
+
+            // Puntuació segons proximitat
+            let pointsEarned = 0;
+            if (bestUserApprox !== null) {
+                const dist = Math.abs(targetNumber - bestUserApprox);
+                if (dist === 0) pointsEarned = 15;
+                else if (dist <= 5) pointsEarned = 10;
+                else if (dist <= 10) pointsEarned = 7;
+                else if (dist <= 25) pointsEarned = 4;
+                else pointsEarned = 2;
+            }
+            updateScore(pointsEarned);
+
+            if (isImmediateExact || (bestUserApprox === targetNumber)) {
+                sessionStats.exactNumbers++;
+                showFeedback(`Càlcul Exacte! Has assolit el ${targetNumber} i guanyes +${pointsEarned} punts!`, 'success');
+            } else if (bestUserApprox !== null) {
+                showFeedback(`Ronda finalitzada! La teva millor aproximació és ${bestUserApprox} (a ${Math.abs(targetNumber - bestUserApprox)} de l'objectiu). +${pointsEarned} punts.`, 'info');
+            } else {
+                showFeedback('Temps esgotat. Observa a sota la demostració pas a pas del solucionador per veure com s’hi arribava.', 'info');
+            }
+
+            // Renderitza la solució pas a pas del motor algorítmic
+            const solBox = document.getElementById('system-numbers-solution');
+            if (!cachedOptimalSolution || cachedOptimalSolution.steps.length === 0) {
+                solBox.innerHTML = `<div class="p-2 rounded bg-white dark:bg-slate-800 border border-indigo-200 dark:border-indigo-800 text-slate-800 dark:text-slate-200">El valor ${cachedOptimalSolution ? cachedOptimalSolution.bestVal : targetNumber} ja estava disponible directament.</div>`;
+                return;
+            }
+
+            const headerTag = cachedOptimalSolution.distance === 0
+                ? `<div class="text-emerald-700 dark:text-emerald-400 font-sans font-bold mb-1.5">✓ Solució Exacta (${cachedOptimalSolution.bestVal}) en ${cachedOptimalSolution.steps.length} passos:</div>`
+                : `<div class="text-amber-700 dark:text-amber-400 font-sans font-bold mb-1.5">Millor aproximació matemàtica possible: ${cachedOptimalSolution.bestVal} (distància ${cachedOptimalSolution.distance}):</div>`;
+
+            solBox.innerHTML = headerTag + cachedOptimalSolution.steps.map((st, idx) => `
+                <div class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-800 border border-indigo-200 dark:border-indigo-800 flex items-center gap-2">
+                    <span class="w-5 h-5 rounded-md bg-indigo-600 text-white text-[11px] font-bold flex items-center justify-center shrink-0">${idx + 1}</span>
+                    <span class="font-bold text-slate-800 dark:text-slate-200">${st}</span>
+                </div>
+            `).join('');
+        }
+
+        /* ============================================================================
+         * 10. DRECERES DE TECLAT PER A UNA EXPERIÈNCIA ÀGIL A L'AULA
+         * ============================================================================ */
+        window.addEventListener('keydown', (e) => {
+            if (currentMode !== 'lletres' || lettersRoundFinished) return;
+            if (lettersPool.length < currentDifficulty.letterSlots) return;
+            if (!document.getElementById('modal-guia').classList.contains('hidden')) return;
+
+            if (e.key === 'Backspace') {
+                e.preventDefault();
+                backspaceLetter();
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                submitCurrentWord();
+            } else if (e.key === 'Escape') {
+                e.preventDefault();
+                clearCurrentWord();
+            } else if (e.key.length === 1) {
+                const pressed = normalizeCatalan(e.key);
+                if (pressed.length === 1) {
+                    const matchIdx = lettersPool.findIndex(item => !item.used && item.char === pressed);
+                    if (matchIdx !== -1) {
+                        selectPoolLetter(matchIdx);
+                    }
+                }
+            }
+        });
+
+        // Inicialització en carregar la pàgina
+        window.onload = function () {
+            initTheme();
+            setDifficulty('mitja');
+        };
+    </script>
+</body>
+</html>

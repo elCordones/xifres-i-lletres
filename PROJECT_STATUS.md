@@ -1,0 +1,88 @@
+# Xifres i Lletres · Laboratori Tecnopedagògic - Estat i Documentació
+
+## 1. Descripció i Especificacions del Projecte
+- **Objectiu principal**: Aplicació educativa interactiva basada en el clàssic concurs «Xifres i Lletres», redissenyada des d'un enfocament tecnopedagògic i DUA (Disseny Universal per a l'Aprenentatge) per treballar la competència lèxica en llengua catalana i l'agilitat aritmètica / sentit numèric a l'aula.
+- **Públic destinatari**:
+  - Alumnat d'Educació Primària (Cicle Inicial 6-8 anys, Cicle Mitjà/Superior 9-11 anys).
+  - Alumnat d'Educació Secundària Obligatòria (ESO 12-15 anys).
+  - Joves i adults (Mode Expert / Reglament TV +16 anys).
+  - Docents per a dinamització d'aula amb PDI, pantalla interactiva o dispositius 1x1.
+- **Stack tecnològic**:
+  - Arquitectura monòlitica client-side pura (un sol fitxer HTML autònom, sense dependències de servidor ni processos de build).
+  - Tailwind CSS (CDN amb suport `darkMode: 'class'`).
+  - Google Fonts (`Inter` per a interfície i `Space Grotesk` per a nombres).
+  - Web Audio API (síntesi de freqüències i acords interactius sense fitxers d'àudio externs).
+  - Web Speech API (`SpeechSynthesisUtterance` amb veu `ca-ES` per a suport a la lectoescriptura).
+  - LocalStorage (persistència del tema clar/fosc i del vocabulari validat pel docent).
+  - DIEC2 (Institut d'Estudis Catalans) com a referent normatiu amb enllaços pedagògics contextuals.
+- **Arquitectura i fitxers clau**:
+  - [index.html](file:///C:/Users/dcordone/Desktop/AGY/Xifres%20i%20lletres/index.html): Punt d'entrada per a GitHub Pages i execució web directa.
+  - [xifres_i_lletres_laboratori_tecnopedag_gic.html](file:///C:/Users/dcordone/Desktop/AGY/Xifres%20i%20lletres/xifres_i_lletres_laboratori_tecnopedag_gic.html): Aplicació completa amb interfície, estils, diccionari, motor algorítmic exhaustiu de resolució matemàtica (DFS amb poda), gestió DUA, mode equips i avaluació formativa.
+  - [favicon.svg](file:///C:/Users/dcordone/Desktop/AGY/Xifres%20i%20lletres/favicon.svg): Icona de pestanya vectorial d'alta resolució basada en rajoles 3D de lletres i xifres.
+  - [README.md](file:///C:/Users/dcordone/Desktop/AGY/Xifres%20i%20lletres/README.md): Documentació pedagògica, manual d'ús, especificacions DUA i guia de desplegament.
+  - [PROJECT_STATUS.md](file:///C:/Users/dcordone/Desktop/AGY/Xifres%20i%20lletres/PROJECT_STATUS.md): Estat del projecte, decisions de disseny i full de ruta per a futures sessions.
+- **Repositori remot**: `https://github.com/elCordones/xifres-i-lletres.git`
+- **Llicenciament i Atribució**:
+  - Codi font: **AGPL v3**.
+  - Continguts i disseny pedagògic: **CC BY-SA 4.0**.
+  - Autoria: **David Cordones · 2026**.
+
+---
+
+## 2. Estat Actual i Punt de Control (Darrera sessió: 2026-10-27)
+- **Estat general**: **Complet, operatiu, allotjat a GitHub i auditat pedagògicament (Versió 1.2 Stable)**.
+- **Funcionalitats completades i verificades**:
+  - [x] **Allotjament i Control de Versions (GitHub)**:
+    - Inicialització del repositori Git local a la branca `main`.
+    - Vinculació amb el repositori remot de GitHub (`https://github.com/elCordones/xifres-i-lletres.git`).
+    - Creació de `index.html` autònom per a desplegament directe a GitHub Pages.
+    - Creació de `favicon.svg` vectorial 3D optimitzat seguint el patró `apps-escolars`.
+    - Creació de `README.md` complet amb insígnies, marc DUA, taula de nivells i llicenciament AGPL v3 / CC BY-SA 4.0.
+    - Creació de `.gitignore` per a la neteja d'arxius temporals del sistema operatiu i entorns de desenvolupament.
+  - [x] **Motor de Lletres (Català)**:
+    - Bossa ponderada de vocals i consonants segons la freqüència real de la llengua catalana.
+    - Normalització automàtica de diacrítics (accents oberts/tancats, dièresis) preservant la ce trencada (`Ç`).
+    - Validació instantània contra corpus integrat de més de 3.000 formes lèxiques normatives.
+    - Anàlisi algorítmica de la ronda amb enllaços directes a la definició de cada paraula al DIEC2 (IEC).
+    - Botó de validació docent per afegir paraules noves a la memòria local de l'aula (`localStorage`).
+    - Pista pedagògica (longitud i lletres d'inici) sense bloquejar la reflexió de l'alumne.
+  - [x] **Motor de Xifres (Aritmètica)**:
+    - Generació d'objectius adaptats a la maduresa cognitiva segons el nivell (garantint existència de solució exacta en nivells Inicial i Mitjà).
+    - Càlcul mental interactiu amb les 4 operacions bàsiques (+, −, ×, ÷), respectant les regles de restes positives i divisions exactes.
+    - Motor algorítmic exhaustiu de resolució en arbre (DFS) que calcula la solució òptima o millor aproximació en menys de 5ms.
+    - Pista de primer pas per desbloquejar l'alumne i demostració pas a pas de la solució en finalitzar el temps.
+    - Funcions de desfer pas (`undo`) i reiniciar el mateix repte.
+  - [x] **Marc DUA i Accessibilitat**:
+    - **Mode Zen (🧘)**: Eliminació del cronòmetre per evitar l'estrès cognitiu (TDAH, TEA, ritmes diversos).
+    - **Pausa Docent (⏸️)**: Aturada temporal del rellotge per obrir el debat metodològic davant la PDI.
+    - **Síntesi fònica (🗣️)**: Lectura en veu alta en català dels mots construïts.
+    - Dreceres de teclat per a una entrada ràpida de lletres (Retorn, Retrocés, Escapada).
+  - [x] **Dinamització i Avaluació d'Aula**:
+    - **Mode Equips (👥)**: Torn cooperatiu altern entre Equip Blau i Equip Vermell amb marcadors separats.
+    - **Quadern d'Avaluació Formativa (📊)**: Modal de resum de la sessió amb estadístiques detallades, botó de còpia per a informe docent i opció directa d'impressió.
+  - [x] **Interfície i Disseny Visual (Resolució d'Incidències)**:
+    - Correcció definitiva dels desbordaments de text ("text que surt del quadrat"):
+      - Cronòmetre i pestanyes redistribuïts a `lg:grid-cols-12` amb truncaments suaus (`min-w-0 truncate`).
+      - Targeta de millor aproximació eixamplada a `md:col-span-5` amb etiqueta escurçada i `flex-wrap`.
+      - Botonera d'operadors amb `flex-wrap` i dimensions responsives adaptades a mòbil.
+      - Botons de nivell d'edat organitzats en graella `grid-cols-2 sm:flex`.
+  - [x] **Mode Fosc / Clar**:
+    - Configuració `darkMode: 'class'` a Tailwind CSS.
+    - Detecció precoç anti-FOUC abans de renderitzar el DOM respectant la preferència del sistema (`prefers-color-scheme`).
+    - Commutador manual (`☀️` / `🌙`) tant a la barra d'eines d'escriptori com a la capçalera mòbil, amb memòria a `localStorage`.
+    - Adaptació cromàtica completa de fons, targetes, ombres 3D, botons i elements generats per JS.
+- **Punt exacte on ens hem quedat**:
+  - Sessió tancada amb èxit. L'arxiu HTML s'ha revisat i validat sintàcticament amb Node.js (zero errors).
+  - La documentació del projecte queda registrada a `PROJECT_STATUS.md` per garantir la continuïtat de context en properes sessions.
+- **Decisions tècniques clau**:
+  - Es manté la política de fitxer únic autònom per facilitar la màxima portabilitat en entorns educatius sense connexió garantida o amb restriccions de xarxa escolars.
+  - L'estil visual preserva el relleu hàptic de rajola 3D (`tile-3d`) adaptat tant a fons clars com a fons foscos.
+
+---
+
+## 3. Full de Ruta d'Implementació (Roadmap / Propers Passos)
+- **Millores futures i backlog**:
+  - [ ] **Ampliador de Corpus**: Permetre importar o exportar llistes de paraules temàtiques en format JSON des de la interfície docent.
+  - [ ] **Exportació de Dades a Full de Càlcul**: Botó per descarregar les estadístiques de la sessió en format CSV / full de càlcul per a la memòria d'avaluació.
+  - [ ] **Configurador de Temps Docent**: Donar l'opció al docent d'establir un temps personalitzat per ronda (per exemple, 30s per a dinàmiques ultra ràpides o 120s per a aules d'acollida).
+  - [ ] **Selector d'Efectes Sonors**: Opció per triar entre so sintètic o silenci absolut des de les opcions de configuració.

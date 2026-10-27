@@ -1,0 +1,14 @@
+# Sistema operatiu
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editors i IDEs
+.vscode/
+.idea/
+*.swp
+*~
+
+# Fitxers temporals i logs
+*.tmp
+*.log
